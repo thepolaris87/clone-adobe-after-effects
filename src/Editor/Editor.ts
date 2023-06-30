@@ -1,7 +1,8 @@
-import { fabric } from 'fabric';
+import fabric from '@fabric';
 
 export default class Editor {
     canvas: fabric.Canvas;
+    fabric = fabric;
     constructor(element: string | HTMLCanvasElement) {
         this.canvas = new fabric.Canvas(element, {
             includeDefaultValues: false,
@@ -10,9 +11,7 @@ export default class Editor {
     }
     save(propertiesToInclude?: string[]) {
         if (!this.canvas) return;
-        const data = this.canvas?.toJSON(['data', ...(propertiesToInclude ?? [])]);
-        console.log(data);
-
+        const data = this.canvas?.toObject(['data', ...(propertiesToInclude ?? [])]);
         return data;
     }
     async asyncLoad(json: string) {
@@ -20,5 +19,9 @@ export default class Editor {
     }
     load(json: string) {
         this.canvas.loadFromJSON(json, () => {});
+    }
+
+    add(...object: fabric.Object[]) {
+        this.canvas.add(...object);
     }
 }

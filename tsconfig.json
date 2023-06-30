@@ -5,7 +5,8 @@
             "@/*": ["src/*"],
             "@assets/*": ["src/assets/*"],
             "@apis/*": ["src/apis/*"],
-            "@components/*": ["src/components/*"]
+            "@components/*": ["src/components/*"],
+            "@fabric":["src/lib/fabric"]
         },
         "target": "ES2020",
         "useDefineForClassFields": true,
