@@ -1,6 +1,8 @@
+import IndexItems from './IndexItems';
 import InsertImage from './InsertImage';
 import InsertText from './InsertText';
 import Save from './Save';
+import Style from './style/Style';
 
 export default function Toolbox() {
     return (
@@ -8,6 +10,8 @@ export default function Toolbox() {
             <Save />
             <InsertText />
             <InsertImage />
+            <IndexItems />
+            <Style />
         </div>
     );
 }
