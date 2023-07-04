@@ -1,5 +1,6 @@
 import Toolbox from './Toolbox/Toolbox';
 import Viewer from './Viewer/Viewer';
+import { Transform } from './Footer/Transform';
 
 export default function Authoring() {
     return (
@@ -15,35 +16,7 @@ export default function Authoring() {
             </div>
             <hr className="border-cyan-950"></hr>
             <div className="flex-[1] overflow-auto p-2">
-                <div>animation scroll test</div>
-                <div>animation scroll test</div>
-                <div>animation scroll test</div>
-                <div>animation scroll test</div>
-                <div>animation scroll test</div>
-                <div>animation scroll test</div>
-                <div>animation scroll test</div>
-                <div>animation scroll test</div>
-                <div>animation scroll test</div>
-                <div>animation scroll test</div>
-                <div>animation scroll test</div>
-                <div>animation scroll test</div>
-                <div>animation scroll test</div>
-                <div>animation scroll test</div>
-                <div>animation scroll test</div>
-                <div>animation scroll test</div>
-                <div>animation scroll test</div>
-                <div>animation scroll test</div>
-                <div>animation scroll test</div>
-                <div>animation scroll test</div>
-                <div>animation scroll test</div>
-                <div>animation scroll test</div>
-                <div>animation scroll test</div>
-                <div>animation scroll test</div>
-                <div>animation scroll test</div>
-                <div>animation scroll test</div>
-                <div>animation scroll test</div>
-                <div>animation scroll test</div>
-                <div>animation scroll test</div>
+                <Transform />
             </div>
         </div>
     );

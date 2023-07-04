@@ -8,3 +8,5 @@ const createGetRequest = <T = unknown>(url: string) => solClient.get<T>(url, get
 // const createDeleteRequest = (url: string) => solClient.delete(url, getConfigure());
 
 export const getImage = () => createGetRequest<TGetImage[]>(`/editor/image/D1`).then((r) => r.data);
+
+export const getSound = () => createGetRequest<TGetSound[]>(`/editor/sound/D1`).then((r) => r.data);

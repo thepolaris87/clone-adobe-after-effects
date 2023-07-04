@@ -8,3 +8,13 @@ type TGetImage = {
     reference: string;
     tags: string;
 };
+
+type TGetSound = {
+    soundId: string;
+    soundDivisionCode: string;
+    duration: string;
+    extension: 'mp3';
+    size: string;
+    reference: string;
+    tags: string;
+};

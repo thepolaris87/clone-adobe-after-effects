@@ -1,9 +1,9 @@
 import fabric from '@fabric';
 import { getImage } from '@/apis/sol';
-import { editorAtom } from '@/atoms/atom';
+import { editorAtom, objectsAtom } from '@/atoms/atom';
 import { IconButtonV1 } from '@/components/Button';
 import useApi from '@/hooks/useApi';
-import { useAtomValue } from 'jotai';
+import { useAtomValue, useSetAtom } from 'jotai';
 import { useMemo, useState } from 'react';
 import { MdImage } from 'react-icons/md';
 import { nanoid } from 'nanoid';
@@ -12,14 +12,16 @@ import { nanoid } from 'nanoid';
 
 const ImageModal = ({ onClose }: { onClose: () => void }) => {
     const editor = useAtomValue(editorAtom);
+    const setObjects = useSetAtom(objectsAtom);
     const { data } = useApi(getImage);
     const list = useMemo(() => data?.filter((img) => !!img.extension && img.imageDivisionCode === '01'), [data]);
 
     const onImageClick = (img: TGetImage) => {
         fabric.Image.fromURL(`https://sol-api.esls.io/images/D1/${img.imageId}.${img.extension}`, (obj) => {
-            obj.set('data', { type: 'image', id: nanoid() });
-            editor?.add(obj);
+            obj.set('data', { type: 'image', id: nanoid(), effects: [] });
             onClose();
+            const objects = editor?.add(obj);
+            if (objects) setObjects(objects.objects);
         });
     };
 
