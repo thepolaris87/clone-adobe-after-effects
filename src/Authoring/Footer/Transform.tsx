@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { getSound } from '@/apis/sol';
 import useApi from '@/hooks/useApi';
-import { fabric } from 'fabric';
 import { useAtomValue } from 'jotai';
 import { objectsAtom } from '@/atoms/atom';
 import { Move, Scale, Rotate, FadeIn, FadeOut, Opacity, Sound } from './Animation';
@@ -35,14 +34,14 @@ export const Transform = () => {
         });
         setOpen(array);
     }, [objects]);
-    console.log(objects);
+
     return (
         <React.Fragment>
             <div className="flex">
-                <div className="w-[45%]">
+                <div className="w-full">
                     <div className="font-[700] mb-2">Animation</div>
                     <div className="px-[10px]">
-                        {objects.map((object: fabric.Object, index) => {
+                        {objects.map((object, index) => {
                             return (
                                 <div key={index} className="bg-[#ecebeb] rounded-[8px] mb-2 p-[4px_10px] shadow-[1px_1px_#cdd8dd]">
                                     <div>{object.data.type}</div>
@@ -52,13 +51,13 @@ export const Transform = () => {
                                     </button>
                                     {open[index] && open[index].open ? (
                                         <div className="p-[3px_20px]">
-                                            <FadeIn />
-                                            <FadeOut />
-                                            <Move />
-                                            <Scale />
-                                            <Rotate />
-                                            <Opacity />
-                                            <Sound sounds={sounds} />
+                                            <FadeIn object={object} />
+                                            <FadeOut object={object} />
+                                            <Move object={object} />
+                                            <Scale object={object} />
+                                            <Rotate object={object} />
+                                            <Opacity object={object} />
+                                            <Sound sounds={sounds} object={object} />
                                         </div>
                                     ) : null}
                                 </div>
@@ -66,7 +65,7 @@ export const Transform = () => {
                         })}
                     </div>
                 </div>
-                <div className="w-[55%] font-[700]">TimeLine</div>
+                {/* <div className="w-[55%] font-[700]">TimeLine</div> */}
             </div>
         </React.Fragment>
     );

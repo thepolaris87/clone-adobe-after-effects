@@ -7,6 +7,7 @@ import { useAtomValue, useSetAtom } from 'jotai';
 import { useMemo, useState } from 'react';
 import { MdImage } from 'react-icons/md';
 import { nanoid } from 'nanoid';
+import { effects } from '../Footer/Animation/Effect';
 
 // const imageCache: { [key: string]: HTMLImageElement } = {};
 
@@ -18,10 +19,10 @@ const ImageModal = ({ onClose }: { onClose: () => void }) => {
 
     const onImageClick = (img: TGetImage) => {
         fabric.Image.fromURL(`https://sol-api.esls.io/images/D1/${img.imageId}.${img.extension}`, (obj) => {
-            obj.set('data', { type: 'image', id: nanoid(), effects: [] });
+            obj.set('data', { type: 'image', id: nanoid(), effects: effects });
             onClose();
             const objects = editor?.add(obj);
-            if (objects) setObjects(objects.objects);
+            if (objects) setObjects(objects);
         });
     };
 
