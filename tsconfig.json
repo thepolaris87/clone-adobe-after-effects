@@ -7,7 +7,7 @@
             "@apis/*": ["src/apis/*"],
             "@components/*": ["src/components/*"],
             "@fabric":["src/lib/fabric"],
-            "react-color": ["node_modules/@types/react-color"]
+            "react-color": ["node_modules/react-color/index"]
         },
         "target": "ES2020",
         "useDefineForClassFields": true,
