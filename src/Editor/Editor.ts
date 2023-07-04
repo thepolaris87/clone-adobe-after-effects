@@ -20,8 +20,9 @@ export default class Editor {
     load(json: string) {
         this.canvas.loadFromJSON(json, () => {});
     }
-
     add(...object: fabric.Object[]) {
         this.canvas.add(...object);
+        const data = this.canvas.toObject(['data']);
+        return data;
     }
 }
