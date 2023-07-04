@@ -7,26 +7,26 @@ import { editorAtom } from '@/atoms/atom';
 export default function IndexItems() {
     const editor = useAtomValue(editorAtom);
     const canvas = editor?.canvas;
-    const activeObject = useAtomValue(activeObjectAtom);
+    const activeObject = useAtomValue(activeObjectAtom) as fabric.Object;
     const doubleUp = () => {
-        (activeObject as any).bringToFront()
+        activeObject.bringToFront();
     } 
     const up = () => {
-        // canvas?.moveTo(activeObject as any, activeObject.index - 1)
+        activeObject.bringForward();
     } 
     const doubleDown = () => {
-        (activeObject as any).sendToBack()
+        activeObject.sendToBack()
     } 
     const down = () => {
+        activeObject.sendBackwards();
     } 
 
-console.log(activeObject)
     return (
         <IconButtonV1>
         <div className='flex items-center gap-2'>
-            <BsChevronUp className="w-[1rem]"/>
+            <BsChevronUp onClick={up} className="w-[1rem]"/>
             <BsChevronDoubleUp onClick={doubleUp} className="w-[1rem] " />
-            <BsChevronDown className="w-[1rem]" />
+            <BsChevronDown onClick={down} className="w-[1rem]" />
             <BsChevronDoubleDown onClick={doubleDown} className="w-[1rem]" />
         </div>
         </IconButtonV1>
