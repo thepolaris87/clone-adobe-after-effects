@@ -7,7 +7,7 @@ import { useAtomValue, useSetAtom } from 'jotai';
 import { useMemo, useState } from 'react';
 import { MdImage } from 'react-icons/md';
 import { nanoid } from 'nanoid';
-import { effects } from '../Footer/Animation/Effect';
+import { effects } from '../Footer/Effects/Effect';
 
 // const imageCache: { [key: string]: HTMLImageElement } = {};
 

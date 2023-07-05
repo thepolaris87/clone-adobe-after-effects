@@ -17,14 +17,15 @@ export const Opacity = ({ object }: { object: fabric.Object }) => {
         object.set('data', { ...object.get('data'), effects });
     };
     const onCheckRange = () => {
-        if (timeMaxValue - timeMinValue < 3) {
+        if (timeMaxValue - timeMinValue <= 1) {
             setTimeMaxValue(timeMaxValue + 1);
             setTimeMinValue(timeMinValue - 1);
         } else {
             setTimeMinPersent((timeMinValue / 100) * 100 + 1);
-            setTimeMaxPersent(101 - (timeMaxValue / 100) * 100 + 1);
+            setTimeMaxPersent(100.5 - (timeMaxValue / 100) * 100 + 1);
         }
     };
+
     return (
         <div className="flex flex-wrap justify-between mb-2">
             <div className="flex w-[40%] justify-between">
@@ -32,7 +33,7 @@ export const Opacity = ({ object }: { object: fabric.Object }) => {
                     <BiBadge className="mr-1" />
                     <h5>Opacity</h5>
                 </span>
-                <span className="flex">
+                <span className="hidden sm:flex">
                     <label className="mr-2">Interval</label>
                     <input name="interval" className="rounded-sm px-2 w-[80%] shadow-[0_1px_#cdd8dd]" onChange={(e) => onChange(e)} />
                 </span>

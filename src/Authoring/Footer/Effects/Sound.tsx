@@ -20,12 +20,12 @@ export const Sound = ({ sounds, object }: { sounds?: TGetSound[]; object: fabric
         object.set('data', { ...object.get('data'), effects });
     };
     const onCheckRange = () => {
-        if (timeMaxValue - timeMinValue < 3) {
+        if (timeMaxValue - timeMinValue <= 1) {
             setTimeMaxValue(timeMaxValue + 1);
             setTimeMinValue(timeMinValue - 1);
         } else {
-            setTimeMinPersent((timeMinValue / 100) * 100 + 1);
-            setTimeMaxPersent(101 - (timeMaxValue / 100) * 100 + 1);
+            setTimeMinPersent((timeMinValue / 100) * 100);
+            setTimeMaxPersent(100.5 - (timeMaxValue / 100) * 100);
         }
     };
 
@@ -44,17 +44,17 @@ export const Sound = ({ sounds, object }: { sounds?: TGetSound[]; object: fabric
                     <BiBadge className="mr-1" />
                     <h5>Sound</h5>
                 </span>
-                <span className="relative">
+                <span className="hidden sm:block relative">
                     <input
                         type="button"
-                        className="w-[192px] rounded-sm px-2 shadow-[0_1px_#cdd8dd] bg-[white] cursor-pointer"
+                        className="w-[192px] rounded-sm px-2 shadow-[0_1px_#cdd8dd] bg-[white] cursor-pointer hover:shadow-[0px_1px_5px_1px_#50bcdf]"
                         value={object.data.effects[2].option.src !== '' ? object.data.effects[2].option.src : 'Select sound'}
                         onClick={() => setOpen(true)}
                         ref={inputRef}
                     ></input>
                     <div ref={divRef}>
                         {open && (
-                            <ul className="bg-[white] w-full h-[300px] shadow-[1px_1px_3px_1px_#cdd8dd] overflow-scroll text-center cursor-pointer absolute top-[-150px]">
+                            <ul className="bg-[white] w-full h-[300px] shadow-[1px_1px_3px_1px_#cdd8dd] overflow-scroll text-center cursor-pointer absolute top-1">
                                 {sounds?.map((sound, index) => {
                                     return (
                                         <li key={index} className="hover:bg-[#d9edf4]" onClick={() => onClick(sound.soundId)}>

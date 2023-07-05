@@ -4,7 +4,7 @@ import { IconButtonV1 } from '@/components/Button';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { nanoid } from 'nanoid';
 import { MdTextFields } from 'react-icons/md';
-import { effects } from '../Footer/Animation/Effect';
+import { effects } from '../Footer/Effects/Effect';
 
 export default function InsertText() {
     const editor = useAtomValue(editorAtom);
