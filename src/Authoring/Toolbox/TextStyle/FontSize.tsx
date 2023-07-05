@@ -1,5 +1,5 @@
 import { editorAtom } from '@/atoms/atom';
-import { activeObjectAtom } from '@/atoms/style';
+import { activeObjectAtom } from '@/atoms/atom';
 import { useAtomValue } from 'jotai';
 import { useEffect, useState } from 'react';
 import { IoIosAdd, IoIosRemove } from 'react-icons/io';

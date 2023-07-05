@@ -1,4 +1,4 @@
-import { activeObjectAtom } from '@/atoms/style';
+import { activeObjectAtom } from '@/atoms/atom';
 import { useAtomValue } from 'jotai';
 import { IconButtonV1 } from '@/components/Button';
 import { BsChevronDoubleUp, BsChevronUp, BsChevronDown, BsChevronDoubleDown } from 'react-icons/bs';

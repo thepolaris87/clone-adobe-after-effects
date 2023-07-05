@@ -19,6 +19,7 @@ const ImageModal = ({ onClose }: { onClose: () => void }) => {
     const onImageClick = (img: TGetImage) => {
         fabric.Image.fromURL(`https://sol-api.esls.io/images/D1/${img.imageId}.${img.extension}`, (obj) => {
             obj.set('data', { type: 'image', id: nanoid(), effects: [] });
+            obj.set('crossOrigin', 'anonymous');
             onClose();
             const objects = editor?.add(obj);
             if (objects) setObjects(objects.objects);
