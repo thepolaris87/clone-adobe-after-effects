@@ -3,9 +3,9 @@ import { getSound } from '@/apis/sol';
 import useApi from '@/hooks/useApi';
 import { useAtomValue } from 'jotai';
 import { objectsAtom } from '@/atoms/atom';
-import { AnimationList } from './components/AnimationList';
+import { AnimationList } from './Animation/AnimationList';
 
-export const Animation = () => {
+export const Footer = () => {
     const objects = useAtomValue(objectsAtom);
     const { data } = useApi(getSound);
     const sounds = useMemo(() => data?.filter((sound) => sound.extension === 'mp3'), [data]);

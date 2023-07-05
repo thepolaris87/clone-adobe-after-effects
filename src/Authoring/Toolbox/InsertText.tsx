@@ -4,7 +4,6 @@ import { IconButtonV1 } from '@/components/Button';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { nanoid } from 'nanoid';
 import { MdTextFields } from 'react-icons/md';
-import { effects } from '../Footer/Effects/Effect';
 
 export default function InsertText() {
     const editor = useAtomValue(editorAtom);
@@ -12,7 +11,7 @@ export default function InsertText() {
 
     const onInsertButtonClick = () => {
         const text = new fabric.Textbox('TEXT');
-        text.set('data', { type: 'textbox', id: nanoid(), effects: effects });
+        text.set('data', { type: 'textbox', id: nanoid(), effects: [] });
         const objects = editor?.add(text);
         if (objects) setObjects(objects);
     };

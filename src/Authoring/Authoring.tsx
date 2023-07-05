@@ -1,6 +1,6 @@
 import Toolbox from './Toolbox/Toolbox';
 import Viewer from './Viewer/Viewer';
-import { Animation } from './Footer/Animation';
+import { Footer } from './Footer/Footer';
 
 export default function Authoring() {
     return (
@@ -16,7 +16,7 @@ export default function Authoring() {
             </div>
             <hr className="border-cyan-950"></hr>
             <div className="flex-[1] overflow-auto p-2">
-                <Animation />
+                <Footer />
             </div>
         </div>
     );
