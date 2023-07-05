@@ -14,7 +14,7 @@ input::-webkit-slider-thumb {
     width: 20px;
     height: 20px;
     border-radius: 50px;
-    border: 2px solid #b0b0b0;
-    background-color: orange;
+    border: 1px solid #b0b0b0;
+    background-color: #374d9a;
     pointer-events: auto;
 }

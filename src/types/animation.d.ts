@@ -1,3 +1,5 @@
+type TEffect = 'MOVE' | 'FADEIN' | 'FADEOUT' | 'ROTATE' | 'SCALE' | 'SOUND' | 'OPACITY';
+
 type EffectProps = {
     type: string;
     timeLine: number[];
@@ -14,11 +16,16 @@ type EffectProps = {
     };
 };
 
+type AnimationProps = {
+    sounds?: TGetSound[];
+    object: fabric.Object;
+    id: number;
+    onDeleteEffect: (value: number) => void;
+};
+
 type SliderProps = {
     timeMinValue: number;
     timeMaxValue: number;
-    timeMinPersent: number;
-    timeMaxPersent: number;
     setTimeMaxValue: (value: number) => void;
     setTimeMinValue: (value: number) => void;
     onCheckRange: () => void;

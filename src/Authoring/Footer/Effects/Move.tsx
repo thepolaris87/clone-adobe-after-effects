@@ -1,13 +1,10 @@
 import { useState } from 'react';
-import { BiBadge } from 'react-icons/bi';
-import { fabric } from 'fabric';
+import { BiBadge, BiTrash } from 'react-icons/bi';
 import { Slider } from '../components/Slider';
 
-export const Move = ({ object }: { object: fabric.Object }) => {
+export const Move = ({ object, id, onDeleteEffect }: AnimationProps) => {
     const [timeMinValue, setTimeMinValue] = useState(0);
     const [timeMaxValue, setTimeMaxValue] = useState(100);
-    const [timeMinPersent, setTimeMinPersent] = useState(0);
-    const [timeMaxPersent, setTimeMaxPersent] = useState(0);
 
     const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const effects = object.data.effects.map((effect: EffectProps) => {
@@ -17,13 +14,9 @@ export const Move = ({ object }: { object: fabric.Object }) => {
         object.set('data', { ...object.get('data'), effects });
     };
     const onCheckRange = () => {
-        if (timeMaxValue - timeMinValue <= 1) {
-            setTimeMaxValue(timeMaxValue + 1);
-            setTimeMinValue(timeMinValue - 1);
-        } else {
-            setTimeMinPersent((timeMinValue / 100) * 100 + 1);
-            setTimeMaxPersent(100.5 - (timeMaxValue / 100) * 100 + 1);
-        }
+        if (timeMaxValue - timeMinValue > 1) return;
+        setTimeMaxValue(timeMaxValue + 1);
+        setTimeMinValue(timeMinValue - 1);
     };
 
     return (
@@ -46,9 +39,8 @@ export const Move = ({ object }: { object: fabric.Object }) => {
                 setTimeMaxValue={setTimeMaxValue}
                 setTimeMinValue={setTimeMinValue}
                 onCheckRange={onCheckRange}
-                timeMinPersent={timeMinPersent}
-                timeMaxPersent={timeMaxPersent}
             />
+            <BiTrash className="cursor-pointer" onClick={() => onDeleteEffect(id)} />
         </div>
     );
 };
