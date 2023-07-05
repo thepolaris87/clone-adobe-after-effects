@@ -22,7 +22,7 @@ const ImageModal = ({ onClose }: { onClose: () => void }) => {
             obj.set('crossOrigin', 'anonymous');
             onClose();
             const objects = editor?.add(obj);
-            if (objects) setObjects(objects.objects);
+            if (objects) setObjects(objects);
         });
     };
 

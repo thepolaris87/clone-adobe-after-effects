@@ -1,26 +1,39 @@
-import { useCallback, useEffect, useState } from 'react';
-type TUseApi<T = unknown> = {
+import { useCallback, useEffect, useRef, useState } from 'react';
+type TUseApiOptions = {
+    suspense?: boolean;
+    enabled?: boolean;
+};
+
+type TUseApiState<T = unknown> = {
     data: null | T;
     loading: boolean;
     error: unknown;
 };
 
-export default function useApi<T = unknown>(api: () => Promise<T>) {
-    const [state, setState] = useState<TUseApi<Awaited<ReturnType<typeof api>>>>({ data: null, loading: false, error: null });
+export default function useApi<T = unknown>(api: () => Promise<T>, options?: TUseApiOptions) {
+    const [state, setState] = useState<TUseApiState<Awaited<ReturnType<typeof api>>>>({ data: null, loading: false, error: null });
 
-    const fetch = useCallback(async () => {
+    const suspender = useRef<Promise<void>>();
+
+    const fetch = useCallback(() => {
         setState((state) => ({ ...state, loading: true }));
-        try {
-            const data = await api();
-            setState({ data, loading: false, error: null });
-            return data;
-        } catch (e) {
-            setState({ data: null, loading: false, error: e });
-        }
+        suspender.current = api()
+            .then((data) => {
+                setState({ data: data as Awaited<ReturnType<typeof api>>, loading: false, error: null });
+            })
+            .catch((e) => {
+                setState({ data: null, loading: false, error: e });
+            });
     }, [api]);
 
     useEffect(() => {
-        fetch();
-    }, [fetch]);
+        if (typeof options?.enabled === 'undefined') fetch();
+        if (typeof options?.enabled === 'boolean' && options.enabled) fetch();
+    }, [fetch, options?.enabled]);
+
+    if (options?.suspense && state.loading) throw suspender.current;
+
+    if (state.error) throw state.error;
+
     return { ...state, refetch: fetch };
 }

@@ -13,7 +13,7 @@ export default function InsertText() {
         const text = new fabric.Textbox('TEXT');
         text.set('data', { type: 'textbox', id: nanoid(), effects: [] });
         const objects = editor?.add(text);
-        if (objects) setObjects(objects.objects);
+        if (objects) setObjects(objects);
     };
 
     return (

@@ -35,7 +35,7 @@ export const Transform = () => {
         });
         setOpen(array);
     }, [objects]);
-    console.log(objects);
+    // console.log(objects);
     return (
         <React.Fragment>
             <div className="flex">

@@ -22,7 +22,7 @@ export default class Editor {
     }
     add(...object: fabric.Object[]) {
         this.canvas.add(...object);
-        const data = this.canvas.toObject(['data']);
+        const data = this.canvas.getObjects();
         return data;
     }
 }

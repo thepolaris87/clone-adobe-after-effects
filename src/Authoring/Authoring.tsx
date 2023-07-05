@@ -1,8 +1,8 @@
 import Toolbox from './Toolbox/Toolbox';
 import Viewer from './Viewer/Viewer';
-import { Transform } from './Footer/Transform';
 import LeftContent from './SideContents/LeftContent';
 import RightContent from './SideContents/RightContent';
+import { Footer } from './Footer/Footer';
 
 export default function Authoring() {
     return (
@@ -22,7 +22,7 @@ export default function Authoring() {
             </div>
             <hr className="border-cyan-950"></hr>
             <div className="flex-[1] overflow-auto p-2">
-                <Transform />
+                <Footer />
             </div>
         </div>
     );
