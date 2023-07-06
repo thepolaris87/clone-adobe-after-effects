@@ -29,6 +29,7 @@ type SliderProps = {
     setTimeMaxValue: (value: number) => void;
     setTimeMinValue: (value: number) => void;
     onCheckRange: () => void;
+    objectId: string;
 };
 
 type InputProps = { value: number; onCheck: () => void; setValue: (value: number) => void };

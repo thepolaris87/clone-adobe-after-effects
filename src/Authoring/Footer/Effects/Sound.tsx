@@ -76,6 +76,7 @@ export const Sound = ({ sounds, object, id, onDeleteEffect }: AnimationProps) =>
                 setTimeMaxValue={setTimeMaxValue}
                 setTimeMinValue={setTimeMinValue}
                 onCheckRange={onCheckRange}
+                objectId={object.data.id}
             />
             <BiTrash className="cursor-pointer" onClick={() => onDeleteEffect(id)} />
         </div>
