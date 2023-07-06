@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { BiBadge, BiTrash } from 'react-icons/bi';
 import { Slider } from '../components/Slider';
 
@@ -7,8 +7,8 @@ export const Opacity = ({ object, id, onDeleteEffect }: AnimationProps) => {
     const [timeMaxValue, setTimeMaxValue] = useState(100);
 
     const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const effects = object.data.effects.map((effect: EffectProps) => {
-            if (effect.type === 'Opacity') return { ...effect, option: { ...effect.option, [e.target.name]: e.target.value } };
+        const effects = object.data.effects.map((effect: EffectProps, index: number) => {
+            if (index === id) return { ...effect, option: { ...effect.option, [e.target.name]: e.target.value } };
             return effect;
         });
         object.set('data', { ...object.get('data'), effects });
@@ -18,6 +18,14 @@ export const Opacity = ({ object, id, onDeleteEffect }: AnimationProps) => {
         setTimeMaxValue(timeMaxValue + 1);
         setTimeMinValue(timeMinValue - 1);
     };
+
+    useEffect(() => {
+        const effects = object.data.effects.map((effect: EffectProps, index: number) => {
+            if (index === id) return { ...effect, timeLine: [timeMinValue, timeMaxValue] };
+            return effect;
+        });
+        object.set('data', { ...object.get('data'), effects });
+    }, [timeMinValue, timeMaxValue, id, object]);
 
     return (
         <div className="flex flex-wrap justify-between mb-2">

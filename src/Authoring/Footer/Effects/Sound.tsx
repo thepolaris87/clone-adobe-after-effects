@@ -12,8 +12,8 @@ export const Sound = ({ sounds, object, id, onDeleteEffect }: AnimationProps) =>
 
     const onClick = (soundId: string) => {
         setSound(soundId);
-        const effects = object.data.effects.map((effect: EffectProps) => {
-            if (effect.type === 'Sound') return { ...effect, option: { ...effect.option, src: soundId } };
+        const effects = object.data.effects.map((effect: EffectProps, index: number) => {
+            if (index === id) return { ...effect, option: { ...effect.option, src: soundId } };
             return effect;
         });
         object.set('data', { ...object.get('data'), effects });
@@ -31,6 +31,14 @@ export const Sound = ({ sounds, object, id, onDeleteEffect }: AnimationProps) =>
             else setOpen(false);
         });
     }, [divRef]);
+
+    useEffect(() => {
+        const effects = object.data.effects.map((effect: EffectProps, index: number) => {
+            if (index === id) return { ...effect, timeLine: [timeMinValue, timeMaxValue] };
+            return effect;
+        });
+        object.set('data', { ...object.get('data'), effects });
+    }, [timeMinValue, timeMaxValue, id, object]);
 
     return (
         <div className="flex flex-wrap justify-between mb-2">

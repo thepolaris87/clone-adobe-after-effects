@@ -8,14 +8,14 @@ export const AnimationList = ({ object, sounds }: { object: fabric.Object; sound
     const [dropDown, setDropDown] = useState(false);
     const [transform, setTransForm] = useState(true);
     const [effect, setEffect] = useState<string>();
-    const inputRef = useRef<HTMLInputElement | null>(null);
     const [update, setUpdate] = useState(true);
+    const inputRef = useRef<HTMLInputElement | null>(null);
 
     const onAddEffect = (title: TEffect) => {
         const option = effects[title].option;
         const obj = object.get('data');
-        if (!obj.effects) object.set('data', { ...obj, effects: [{ effects: { type: title, timeLine: [0, 1], option: option } }] });
-        else object.set('data', { ...obj, effects: [...obj.effects, { type: title, timeLine: [0, 1], option: option }] });
+        if (!obj.effects) object.set('data', { ...obj, effects: [{ effects: { type: title, timeLine: [1, 100], option: option } }] });
+        else object.set('data', { ...obj, effects: [...obj.effects, { type: title, timeLine: [1, 100], option: option }] });
         setDropDown(true);
         setEffect(title);
     };
