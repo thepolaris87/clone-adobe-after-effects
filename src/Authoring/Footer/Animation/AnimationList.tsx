@@ -1,20 +1,25 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Move, Scale, Rotate, FadeIn, FadeOut, Opacity, Sound } from '../Effects';
+import { useAtomValue } from 'jotai';
+import { activeObjectAtom, editorAtom } from '@/atoms/atom';
 import { MdChevronRight, MdKeyboardArrowDown } from 'react-icons/md';
 import { BiCaretDownSquare } from 'react-icons/bi';
 import { effects } from '../Effects/Effect';
 
 export const AnimationList = ({ object, sounds }: { object: fabric.Object; sounds: TGetSound[] }) => {
+    const editor = useAtomValue(editorAtom);
+    const activeObject = useAtomValue(activeObjectAtom);
     const [dropDown, setDropDown] = useState(false);
     const [transform, setTransForm] = useState(true);
     const [effect, setEffect] = useState<string>();
+    const [update, setUpdate] = useState(true);
     const inputRef = useRef<HTMLInputElement | null>(null);
 
     const onAddEffect = (title: TEffect) => {
         const option = effects[title].option;
         const obj = object.get('data');
-        if (!obj.effects) object.set('data', { ...obj, effects: [{ effects: { type: title, timeLine: [0, 1], option: option } }] });
-        else object.set('data', { ...obj, effects: [...obj.effects, { type: title, timeLine: [0, 1], option: option }] });
+        if (!obj.effects) object.set('data', { ...obj, effects: [{ effects: { type: title, timeLine: [1, 100], option: option } }] });
+        else object.set('data', { ...obj, effects: [...obj.effects, { type: title, timeLine: [1, 100], option: option }] });
         setDropDown(true);
         setEffect(title);
     };
@@ -23,6 +28,7 @@ export const AnimationList = ({ object, sounds }: { object: fabric.Object; sound
         const obj = object.get('data');
         const effects = obj.effects.filter((_effect: EffectProps, index: number) => id !== index);
         object.set('data', { ...obj, effects: effects });
+        setUpdate(!update);
     };
 
     useEffect(() => {
@@ -32,7 +38,14 @@ export const AnimationList = ({ object, sounds }: { object: fabric.Object; sound
     }, [inputRef]);
 
     return (
-        <div className="bg-[#ecebeb] rounded-[8px] mb-2 p-[4px_10px] shadow-[1px_1px_#cdd8dd]">
+        <div
+            className="rounded-[8px] mb-4 p-[4px_10px] shadow-[1px_3px_5px_1px_#cdd8dd] cursor-pointer"
+            style={{ backgroundColor: activeObject.data && activeObject.data.id === object.data.id ? '#dddbdb' : '#ecebeb' }}
+            onClick={() => {
+                editor?.canvas.setActiveObject(object);
+                editor?.canvas.renderAll();
+            }}
+        >
             <div className="flex justify-between p-2">
                 <div className="text-[20px]">{object.data.type}</div>
                 <div className="hidden sm:flex items-center">

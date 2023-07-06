@@ -3,7 +3,7 @@ export const effects = {
         option: { top: 0, left: 0 }
     },
     SCALE: {
-        option: { ScaleX: 0, ScaleY: 0 }
+        option: { scaleX: 0, scaleY: 0 }
     },
     SOUND: {
         option: { src: '' }
