@@ -1,5 +1,5 @@
 import { editorAtom } from '@/atoms/atom';
-import { activeObjectAtom } from '@/atoms/style';
+import { activeObjectAtom } from '@/atoms/atom';
 import { IconButtonV1 } from '@/components/Button';
 import { useAtomValue } from 'jotai';
 import { useEffect, useRef, useState } from 'react';

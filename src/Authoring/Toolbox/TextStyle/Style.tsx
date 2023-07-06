@@ -2,7 +2,7 @@ import { editorAtom } from '@/atoms/atom';
 import StrokeText from './StrokeText';
 import StrokeWidth from './StrokeWidth';
 import { useAtom, useAtomValue } from 'jotai';
-import { activeObjectAtom } from '@/atoms/style';
+import { activeObjectAtom } from '@/atoms/atom';
 import FontSize from './FontSize';
 import FontColor from './FontColor';
 import FontFamily from './FontFamily';

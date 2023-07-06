@@ -5,3 +5,5 @@ import { fabric } from 'fabric';
 export const editorAtom = atom<null | Editor>(null);
 
 export const objectsAtom = atom<fabric.Object[]>([]);
+
+export const activeObjectAtom = atom<Object | undefined>({})
