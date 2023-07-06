@@ -14,6 +14,7 @@ export default function FontStyle() {
     } else {
       activeObject?.set('fontWeight', 'bold')
     }
+    canvas?.renderAll();
   }
 
   const italicBtnClick = () => {
