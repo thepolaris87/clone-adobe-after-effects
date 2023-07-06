@@ -9,6 +9,7 @@ export const AnimationList = ({ object, sounds }: { object: fabric.Object; sound
     const [transform, setTransForm] = useState(true);
     const [effect, setEffect] = useState<string>();
     const inputRef = useRef<HTMLInputElement | null>(null);
+    const [update, setUpdate] = useState(true);
 
     const onAddEffect = (title: TEffect) => {
         const option = effects[title].option;
@@ -23,6 +24,7 @@ export const AnimationList = ({ object, sounds }: { object: fabric.Object; sound
         const obj = object.get('data');
         const effects = obj.effects.filter((_effect: EffectProps, index: number) => id !== index);
         object.set('data', { ...obj, effects: effects });
+        setUpdate(!update);
     };
 
     useEffect(() => {
