@@ -7,33 +7,40 @@ import FontSize from './FontSize';
 import FontColor from './FontColor';
 import FontFamily from './FontFamily';
 import FontStyle from './FontStyle';
+import { useEffect } from 'react';
 
 export default function Style() {
     const editor = useAtomValue(editorAtom);
     const canvas = editor?.canvas;
     const [activeObject, setActiveObject] = useAtom(activeObjectAtom);
 
-    canvas?.on('selection:updated', function () {
-        const active = canvas.getActiveObject() as fabric.Object;
-        if (!active) return;
-        setActiveObject(active);
-    });
+    useEffect(() => {
+        canvas?.on('selection:updated', function () {
+            const active = canvas.getActiveObject() as fabric.Object;
+            if (!active) return;
+            setActiveObject(active);
+        });
 
-    canvas?.on('object:modified', function () {
-        const active = canvas.getActiveObject() as fabric.Object;
-        if (!active) return;
-        setActiveObject(active);
-    });
+        canvas?.on('object:modified', function () {
+            const active = canvas.getActiveObject() as fabric.Object;
+            if (!active) return;
+            setActiveObject(active);
+        });
 
-    canvas?.on('selection:created', function () {
-        const active = canvas.getActiveObject() as fabric.Object;
-        if (!active) return;
-        setActiveObject(active);
-    });
+        canvas?.on('selection:created', function () {
+            const active = canvas.getActiveObject() as fabric.Object;
+            if (!active) return;
+            setActiveObject(active);
+        });
 
-    canvas?.on('selection:cleared', function () {
-        setActiveObject({});
-    });
+        canvas?.on('selection:cleared', function () {
+            setActiveObject({});
+        });
+
+        return () => {
+            canvas?.off();
+        };
+    }, [canvas]);
 
     return (
         <>

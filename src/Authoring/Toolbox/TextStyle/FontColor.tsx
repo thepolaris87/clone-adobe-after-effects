@@ -33,7 +33,7 @@ export default function FontColor() {
         setColor(color);
         if (text) {
             text?.set('fill', color.hex);
-            editor?.add(text);
+            canvas?.renderAll();
         }
     };
 
