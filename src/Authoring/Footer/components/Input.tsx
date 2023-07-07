@@ -1,6 +1,6 @@
 import css from '../css/Input.module.css';
 
-export const Input = ({ value, onCheck, setValue }: InputProps) => {
+export const Input = ({ value, onCheck, setValue, isPlaying }: InputProps) => {
     return (
         <input
             className={css.input}
@@ -13,6 +13,7 @@ export const Input = ({ value, onCheck, setValue }: InputProps) => {
                 setValue(e.target.valueAsNumber);
                 onCheck();
             }}
+            disabled={isPlaying}
         />
     );
 };

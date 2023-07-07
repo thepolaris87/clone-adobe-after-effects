@@ -1,8 +1,17 @@
 import { useState, useEffect } from 'react';
+import classNames from 'classnames';
 import { BiBadge, BiTrash } from 'react-icons/bi';
 import { Slider } from '../components/Slider';
+import { MdPlayCircleOutline, MdOutlineStopCircle } from 'react-icons/md';
+import { editorAtom } from '@/atoms/atom';
+import { useAtomValue } from 'jotai';
+import { wait, onSetTimeLine } from '@/util/util';
 
 export const Rotate = ({ object, id, onDeleteEffect }: AnimationProps) => {
+    const editor = useAtomValue(editorAtom);
+    const [cancel, setCancel] = useState<any>();
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [angle, setAngle] = useState(0);
     const [timeMinValue, setTimeMinValue] = useState(0);
     const [timeMaxValue, setTimeMaxValue] = useState(100);
 
@@ -18,13 +27,34 @@ export const Rotate = ({ object, id, onDeleteEffect }: AnimationProps) => {
         setTimeMaxValue(timeMaxValue + 1);
         setTimeMinValue(timeMinValue - 1);
     };
+    const onPlayAnimation = async () => {
+        setIsPlaying(true);
+        const { option, timeLine } = object.data.effects[id];
+        await wait(timeLine[0] * 1000);
+        setAngle(object.angle as number);
 
+        const _cancel = object.animate(
+            { angle: option.angle },
+            {
+                duration: timeLine[1] * 1000,
+                onChange: () => {
+                    editor?.canvas.requestRenderAll();
+                },
+                onComplete: () => {
+                    object.set('angle', 0);
+                    setIsPlaying(false);
+                }
+            }
+        );
+        setCancel(_cancel);
+    };
+    const onStopAnimation = () => {
+        setIsPlaying(false);
+        cancel[0]?.();
+        object.set('angle', angle);
+    };
     useEffect(() => {
-        const effects = object.data.effects.map((effect: EffectProps, index: number) => {
-            if (index === id) return { ...effect, timeLine: [timeMinValue, timeMaxValue] };
-            return effect;
-        });
-        object.set('data', { ...object.get('data'), effects });
+        onSetTimeLine({ object, id, timeMinValue, timeMaxValue });
     }, [timeMinValue, timeMaxValue, id, object]);
 
     return (
@@ -46,8 +76,19 @@ export const Rotate = ({ object, id, onDeleteEffect }: AnimationProps) => {
                 setTimeMinValue={setTimeMinValue}
                 onCheckRange={onCheckRange}
                 objectId={object.data.id}
+                isPlaying={isPlaying}
             />
-            <BiTrash className="cursor-pointer" onClick={() => onDeleteEffect(id)} />
+            <span className="flex">
+                {!isPlaying ? (
+                    <MdPlayCircleOutline className="hidden sm:block cursor-pointer mr-1" onClick={() => onPlayAnimation()} />
+                ) : (
+                    <MdOutlineStopCircle className="hidden sm:block cursor-pointer mr-1" onClick={() => onStopAnimation()} />
+                )}
+                <BiTrash
+                    className={classNames(isPlaying ? 'cursor-not-allowed' : 'cursor-pointer', 'hidden sm:block')}
+                    onClick={() => !isPlaying && onDeleteEffect(id)}
+                />
+            </span>
         </div>
     );
 };
