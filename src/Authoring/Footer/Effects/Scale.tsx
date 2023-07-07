@@ -5,7 +5,7 @@ import { Slider } from '../components/Slider';
 import { MdPlayCircleOutline, MdOutlineStopCircle } from 'react-icons/md';
 import { editorAtom } from '@/atoms/atom';
 import { useAtomValue } from 'jotai';
-import { wait, onSetTimeLine } from '@/util/util';
+import { wait, onSetTimeLine, onPlayAnimation } from '@/util/util';
 
 export const Scale = ({ object, id, onDeleteEffect }: AnimationProps) => {
     const editor = useAtomValue(editorAtom);
@@ -27,27 +27,19 @@ export const Scale = ({ object, id, onDeleteEffect }: AnimationProps) => {
         setTimeMaxValue(timeMaxValue + 1);
         setTimeMinValue(timeMinValue - 1);
     };
-    const onPlayAnimation = async () => {
+    const onClick = async () => {
         setIsPlaying(true);
-        const { option, timeLine } = object.data.effects[id];
-        await wait(timeLine[0] * 1000);
+        const { option: opt, timeLine } = object.data.effects[id];
+        const [startTime, endTime] = timeLine;
+        await wait(startTime * 1000);
         const { scaleX, scaleY } = object;
         setScale({ scaleX: scaleX || 0, scaleY: scaleY || 0 });
-
-        const _cancel = object.animate(
-            { scaleX: option.scaleX, scaleY: option.scaleY },
-            {
-                duration: timeLine[1] * 1000,
-                onChange: () => {
-                    editor?.canvas.requestRenderAll();
-                },
-                onComplete: () => {
-                    object.set({ scaleX: scaleX, scaleY: scaleY });
-                    setIsPlaying(false);
-                }
-            }
-        );
-        setCancel(_cancel);
+        const option = { scaleX: opt.scaleX, scaleY: opt.scaleY };
+        const onComplete = () => {
+            object.set({ scaleX: scaleX, scaleY: scaleY });
+            setIsPlaying(false);
+        };
+        onPlayAnimation({ object, editor, setCancel, endTime, option, onComplete });
     };
 
     const onStopAnimation = () => {
@@ -87,7 +79,7 @@ export const Scale = ({ object, id, onDeleteEffect }: AnimationProps) => {
             />
             <span className="flex">
                 {!isPlaying ? (
-                    <MdPlayCircleOutline className="hidden sm:block cursor-pointer mr-1" onClick={() => onPlayAnimation()} />
+                    <MdPlayCircleOutline className="hidden sm:block cursor-pointer mr-1" onClick={() => onClick()} />
                 ) : (
                     <MdOutlineStopCircle className="hidden sm:block cursor-pointer mr-1" onClick={() => onStopAnimation()} />
                 )}

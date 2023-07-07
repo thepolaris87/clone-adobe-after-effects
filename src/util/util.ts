@@ -27,3 +27,16 @@ export const onSetTimeLine = ({ object, id, timeMinValue, timeMaxValue }: TimeLi
     });
     object.set('data', { ...object.get('data'), effects });
 };
+
+export const onPlayAnimation = ({ object, editor, setCancel, endTime, option, onComplete, duration }: PlayAnimationProps) => {
+    const _cancel = object.animate(option, {
+        duration: duration ? duration : endTime * 1000,
+        onChange: () => {
+            editor?.canvas.requestRenderAll();
+        },
+        onComplete: () => {
+            onComplete();
+        }
+    });
+    setCancel(_cancel);
+};

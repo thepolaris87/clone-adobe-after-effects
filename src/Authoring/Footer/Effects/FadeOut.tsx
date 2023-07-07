@@ -5,7 +5,7 @@ import { Slider } from '../components/Slider';
 import { MdPlayCircleOutline, MdOutlineStopCircle } from 'react-icons/md';
 import { editorAtom } from '@/atoms/atom';
 import { useAtomValue } from 'jotai';
-import { wait, onSetTimeLine } from '@/util/util';
+import { wait, onSetTimeLine, onPlayAnimation } from '@/util/util';
 
 export const FadeOut = ({ object, id, onDeleteEffect }: AnimationProps) => {
     const editor = useAtomValue(editorAtom);
@@ -19,28 +19,18 @@ export const FadeOut = ({ object, id, onDeleteEffect }: AnimationProps) => {
         setTimeMaxValue(timeMaxValue + 1);
         setTimeMinValue(timeMinValue - 1);
     };
-    const onPlayAnimation = async () => {
+    const onClick = async () => {
         setIsPlaying(true);
-        const { timeLine } = object.data.effects[id];
-        await wait(timeLine[0] * 1000);
+        const [startTime, endTime] = object.data.effects[id].timeLine;
+        await wait(startTime * 1000);
         object.set('opacity', 1);
-
-        const _cancel = object.animate(
-            { opacity: 0 },
-            {
-                duration: timeLine[1] * 1000,
-                onChange: () => {
-                    editor?.canvas.requestRenderAll();
-                },
-                onComplete: () => {
-                    object.set('opacity', 1);
-                    setIsPlaying(false);
-                }
-            }
-        );
-        setCancel(_cancel);
+        const option = { opacity: 0 };
+        const onComplete = () => {
+            object.set('opacity', 1);
+            setIsPlaying(false);
+        };
+        onPlayAnimation({ object, editor, setCancel, endTime, option, onComplete });
     };
-
     const onStopAnimation = () => {
         setIsPlaying(false);
         cancel[0]?.();
@@ -68,7 +58,7 @@ export const FadeOut = ({ object, id, onDeleteEffect }: AnimationProps) => {
             />
             <span className="flex">
                 {!isPlaying ? (
-                    <MdPlayCircleOutline className="hidden sm:block cursor-pointer mr-1" onClick={() => onPlayAnimation()} />
+                    <MdPlayCircleOutline className="hidden sm:block cursor-pointer mr-1" onClick={() => onClick()} />
                 ) : (
                     <MdOutlineStopCircle className="hidden sm:block cursor-pointer mr-1" onClick={() => onStopAnimation()} />
                 )}

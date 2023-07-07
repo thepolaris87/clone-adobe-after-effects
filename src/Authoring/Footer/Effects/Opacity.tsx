@@ -5,7 +5,7 @@ import { Slider } from '../components/Slider';
 import { MdPlayCircleOutline, MdOutlineStopCircle } from 'react-icons/md';
 import { editorAtom } from '@/atoms/atom';
 import { useAtomValue } from 'jotai';
-import { wait, onSetTimeLine } from '@/util/util';
+import { wait, onSetTimeLine, onPlayAnimation } from '@/util/util';
 
 export const Opacity = ({ object, id, onDeleteEffect }: AnimationProps) => {
     const editor = useAtomValue(editorAtom);
@@ -26,49 +26,34 @@ export const Opacity = ({ object, id, onDeleteEffect }: AnimationProps) => {
         setTimeMaxValue(timeMaxValue + 1);
         setTimeMinValue(timeMinValue - 1);
     };
-    const onPlayAnimation = async () => {
-        let _cancel: any;
+    const onClick = async () => {
         setIsPlaying(true);
-        const { option, timeLine } = object.data.effects[id];
-        await wait(timeLine[0] * 1000);
-        if (option.interval === 0) {
+        const { option: opt, timeLine } = object.data.effects[id];
+        const [startTime, endTime] = timeLine;
+        await wait(startTime * 1000);
+        if (opt.interval === 0) {
             setIsPlaying(false);
             return;
         }
-        for (let index = 0; index < Math.floor(timeLine[1] / option.interval); index++) {
+        for (let index = 0; index < Math.floor(timeLine[1] / opt.interval); index++) {
             object.set('opacity', 0);
+            const duration = opt.interval * 1000;
             await new Promise<void>((resolve) => {
-                _cancel = object.animate(
-                    { opacity: 1 },
-                    {
-                        duration: option.interval * 1000,
-                        onChange: () => {
-                            editor?.canvas.requestRenderAll();
-                        },
-                        onComplete: () => {
-                            resolve();
-                            object.set('opacity', 1);
-                        }
-                    }
-                );
-                setCancel(_cancel);
+                const option = { opacity: 1 };
+                const onComplete = () => {
+                    resolve();
+                    object.set('opacity', 1);
+                };
+                onPlayAnimation({ object, editor, setCancel, endTime, option, onComplete, duration });
             });
             await new Promise<void>((resolve) => {
-                _cancel = object.animate(
-                    { opacity: 0 },
-                    {
-                        duration: option.interval * 1000,
-                        onChange: () => {
-                            editor?.canvas.requestRenderAll();
-                        },
-                        onComplete: () => {
-                            resolve();
-                            object.set('opacity', 1);
-                            if (index === Math.floor(timeLine[1] / option.interval) - 1) setIsPlaying(false);
-                        }
-                    }
-                );
-                setCancel(_cancel);
+                const option = { opacity: 0 };
+                const onComplete = () => {
+                    resolve();
+                    object.set('opacity', 1);
+                    if (index === Math.floor(timeLine[1] / opt.interval) - 1) setIsPlaying(false);
+                };
+                onPlayAnimation({ object, editor, setCancel, endTime, option, onComplete, duration });
             });
         }
     };
@@ -107,7 +92,7 @@ export const Opacity = ({ object, id, onDeleteEffect }: AnimationProps) => {
             />
             <span className="flex">
                 {!isPlaying ? (
-                    <MdPlayCircleOutline className="hidden sm:block cursor-pointer mr-1" onClick={() => onPlayAnimation()} />
+                    <MdPlayCircleOutline className="hidden sm:block cursor-pointer mr-1" onClick={() => onClick()} />
                 ) : (
                     <MdOutlineStopCircle className="hidden sm:block cursor-pointer mr-1" onClick={() => onStopAnimation()} />
                 )}
