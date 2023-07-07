@@ -32,9 +32,9 @@ export default function LeftContent() {
     useEffect(() => {
         if (objects === items) return;
         if (objects && objects.length > 0) {
-            // setItems(objects);
+            // setItems([...objects].reverse());
         }
-    }, [objects, items]);
+    }, [objects]);
 
     useEffect(() => {
         if (Object.keys(activeObject).length === 0) {
