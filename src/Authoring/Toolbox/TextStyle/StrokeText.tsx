@@ -33,7 +33,7 @@ export default function StrokeText() {
         setColor(color);
         if (text) {
             text?.set('stroke', color.hex);
-            canvas?.renderAll()
+            canvas?.renderAll();
         }
     };
 
