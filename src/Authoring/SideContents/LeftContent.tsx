@@ -10,28 +10,37 @@ export default function LeftContent() {
     const activeObject: any = useAtomValue(activeObjectAtom);
     const [activeSrc, setActiveSrc] = useState('');
     const objects = canvas?.getObjects();
-    const [items, setItems] = useState<Object[]>([]);
-
-    canvas?.on('object:added', function (e) {
-        const addedObject = e.target;
-        if (addedObject) {
-            addedObject.hasControls = true;
-            addedObject.hasBorders = true;
-            setItems((prev) => Array.from(new Set([...prev, addedObject])));
-
-            canvas.renderAll();
-        }
-    });
+    const [items, setItems] = useState<Object[]>(objects ? objects : []);
 
     useEffect(() => {
-        Array.from(new Set(objects)).map((el) => setItems((prev) => Array.from(new Set([...prev, el]))));
-    }, []);
+        canvas?.on('object:added', function (e) {
+            const addedObject = e.target;
+            if (addedObject) {
+                addedObject.hasControls = true;
+                addedObject.hasBorders = true;
+
+                setItems((prev) => [addedObject, ...prev]);
+
+                canvas.renderAll();
+            }
+        });
+        return () => {
+            canvas?.off();
+        };
+    }, [canvas]);
+
+    useEffect(() => {
+        if (objects === items) return;
+        if (objects && objects.length > 0) {
+            // setItems([...objects].reverse());
+        }
+    }, [objects]);
 
     useEffect(() => {
         if (Object.keys(activeObject).length === 0) {
             setActiveSrc('');
         } else {
-            setActiveSrc(activeObject.data.type === 'image' ? activeObject.getSrc() : activeObject.toDataURL());
+            setActiveSrc(activeObject.data?.type === 'image' ? activeObject.getSrc() : activeObject.toDataURL());
         }
     }, [activeObject]);
 
@@ -48,9 +57,14 @@ export default function LeftContent() {
         if (!destination) return;
 
         const updatedItems = [...items];
-        const [movedItem] = updatedItems.splice(source.index, 1);
+        const movedItem = updatedItems[source.index];
+        updatedItems.splice(source.index, 1);
         updatedItems.splice(destination.index, 0, movedItem);
+
         setItems(updatedItems);
+
+        canvas?.moveTo(movedItem as any, updatedItems.length - destination.index - 1);
+        canvas?.renderAll();
     };
 
     useEffect(() => {
@@ -65,6 +79,7 @@ export default function LeftContent() {
     if (!enabled) {
         return null;
     }
+
     return (
         <DragDropContext onDragEnd={onDragEnd}>
             <Droppable droppableId="droppable">
@@ -74,17 +89,17 @@ export default function LeftContent() {
                             {Object.keys(activeObject).length === 0 ? null : <img className="object-contain w-full h-full" src={activeSrc} />}
                         </div>
                         <div>
-                            {items.map((el: any, i: number) => {
+                            {[...items].map((el: any, i: number) => {
                                 return (
                                     <Draggable key={el.data.id} draggableId={el.data.id} index={i}>
                                         {(provided) => (
                                             <div
                                                 key={el.data.id}
-                                                className="flex bg-white w-full h-12 mt-2 rounded-md"
+                                                className="flex bg-white w-full h-12 mt-2 rounded-md justify-between px-2"
                                                 ref={provided.innerRef}
                                                 {...provided.draggableProps}
                                                 {...provided.dragHandleProps}
-                                                onClick={() => selectObject(el)}
+                                                onMouseDown={() => selectObject(el)}
                                             >
                                                 <img
                                                     src={
@@ -96,7 +111,7 @@ export default function LeftContent() {
                                                               })
                                                     }
                                                 ></img>
-                                                <div>{el.data.type}</div>
+                                                <div className="truncate">{el.data.type}</div>
                                             </div>
                                         )}
                                     </Draggable>
