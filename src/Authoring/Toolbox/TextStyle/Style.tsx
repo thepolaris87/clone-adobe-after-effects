@@ -15,30 +15,42 @@ export default function Style() {
     const [activeObject, setActiveObject] = useAtom(activeObjectAtom);
 
     useEffect(() => {
-        canvas?.on('selection:updated', function () {
-            const active = canvas.getActiveObject() as fabric.Object;
+        const handleObjectUpdate = () => {
+            const active = canvas?.getActiveObject() as fabric.Object;
             if (!active) return;
             setActiveObject(active);
-        });
+        };
 
-        canvas?.on('object:modified', function () {
-            const active = canvas.getActiveObject() as fabric.Object;
+        const handleObjectModified = () => {
+            const active = canvas?.getActiveObject() as fabric.Object;
             if (!active) return;
             setActiveObject(active);
-        });
+        };
 
-        canvas?.on('selection:created', function () {
-            const active = canvas.getActiveObject() as fabric.Object;
+        const handleSelectionCreated = () => {
+            const active = canvas?.getActiveObject() as fabric.Object;
             if (!active) return;
             setActiveObject(active);
-        });
+        };
 
-        canvas?.on('selection:cleared', function () {
+        const handleSelectionCleared = () => {
             setActiveObject({});
-        });
+        };
+
+        if (canvas) {
+            canvas.on('object:added', handleObjectUpdate);
+            canvas.on('object:modified', handleObjectModified);
+            canvas.on('selection:created', handleSelectionCreated);
+            canvas.on('selection:cleared', handleSelectionCleared);
+        }
 
         return () => {
-            canvas?.off();
+            if (canvas) {
+                canvas.off('object:added', handleObjectUpdate);
+                canvas.off('object:modified', handleObjectModified);
+                canvas.off('selection:created', handleSelectionCreated);
+                canvas.off('selection:cleared', handleSelectionCleared);
+            }
         };
     }, [canvas]);
 
