@@ -30,6 +30,19 @@ type SliderProps = {
     setTimeMinValue: (value: number) => void;
     onCheckRange: () => void;
     objectId: string;
+    isPlaying: boolean;
 };
 
-type InputProps = { value: number; onCheck: () => void; setValue: (value: number) => void };
+type PlayAnimationProps = {
+    object: fabric.Object;
+    editor: Editor | null;
+    setCancel: any;
+    endTime: number;
+    option: { [key: string]: number | string };
+    onComplete: () => void;
+    duration?: number;
+};
+
+type InputProps = { value: number; onCheck: () => void; setValue: (value: number) => void; isPlaying: boolean };
+
+type TimeLineProps = { object: fabric.Object; id: number; timeMinValue: number; timeMaxValue: number };

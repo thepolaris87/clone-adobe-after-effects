@@ -2,7 +2,7 @@ import { Input } from './Input';
 import { useAtomValue } from 'jotai';
 import { activeObjectAtom } from '@/atoms/atom';
 
-export const Slider = ({ timeMinValue, timeMaxValue, setTimeMaxValue, setTimeMinValue, onCheckRange, objectId }: SliderProps) => {
+export const Slider = ({ timeMinValue, timeMaxValue, setTimeMaxValue, setTimeMinValue, onCheckRange, objectId, isPlaying }: SliderProps) => {
     const activeObj = useAtomValue(activeObjectAtom);
 
     return (
@@ -10,8 +10,8 @@ export const Slider = ({ timeMinValue, timeMaxValue, setTimeMaxValue, setTimeMin
             className={'hidden sm:flex w-[55%] items-center relative'}
             style={{ backgroundColor: activeObj.data && objectId === activeObj.data.id ? '#dddbdb' : '#ecebeb' }}
         >
-            <Input value={timeMinValue} onCheck={onCheckRange} setValue={setTimeMinValue} />
-            <Input value={timeMaxValue} onCheck={onCheckRange} setValue={setTimeMaxValue} />
+            <Input value={timeMinValue} onCheck={onCheckRange} setValue={setTimeMinValue} isPlaying={isPlaying} />
+            <Input value={timeMaxValue} onCheck={onCheckRange} setValue={setTimeMaxValue} isPlaying={isPlaying} />
             <div
                 className="relative h-[7px] w-full rounded-[4px]"
                 style={{ backgroundColor: activeObj.data && objectId === activeObj.data.id ? '#ecebeb' : '#dddddd' }}

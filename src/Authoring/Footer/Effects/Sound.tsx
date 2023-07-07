@@ -1,21 +1,30 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
+import classNames from 'classnames';
 import { BiBadge, BiTrash } from 'react-icons/bi';
-import { MdPlayCircle, MdStopCircle } from 'react-icons/md';
+import { MdPlayCircle, MdStopCircle, MdOutlineStopCircle } from 'react-icons/md';
 import { Slider } from '../components/Slider';
 import { sound } from '@/util/util';
+import { MdPlayCircleOutline } from 'react-icons/md';
+import { wait, onSetTimeLine } from '@/util/util';
+import { useTimeCheck } from '@/hooks/useTimeCheck';
 
 export const Sound = ({ sounds, object, id, onDeleteEffect }: AnimationProps) => {
     const [open, setOpen] = useState(false);
     const [soundId, setSoundId] = useState<string>();
     const [_sound, setSound] = useState<ReturnType<typeof sound>>();
     const [playing, setPlaying] = useState<boolean>(false);
+    const [isPlaying, setIsPlaying] = useState(false);
     const [timeMinValue, setTimeMinValue] = useState(0);
     const [timeMaxValue, setTimeMaxValue] = useState(100);
     const divRef = useRef<HTMLDivElement | null>(null);
     const inputRef = useRef<HTMLInputElement | null>(null);
+    const soundIdRef = useRef<number>();
+    const { start, stop, time } = useTimeCheck();
 
     const onClick = (soundId: string) => {
         setSoundId(soundId);
+        const audio = sound(`https://sol-api.esls.io/sounds/D1/${soundId}.mp3`);
+        setSound(audio);
         const effects = object.data.effects.map((effect: EffectProps, index: number) => {
             if (index === id) return { ...effect, option: { ...effect.option, src: soundId } };
             return effect;
@@ -28,16 +37,38 @@ export const Sound = ({ sounds, object, id, onDeleteEffect }: AnimationProps) =>
         setTimeMinValue(timeMinValue - 1);
     };
     const onPlay = (flag: boolean) => {
-        if (flag && soundId) {
-            const audio = sound(`https://sol-api.esls.io/sounds/D1/${soundId}.mp3`);
-            setSound(audio);
+        if (flag && _sound) {
             setPlaying(true);
-            audio.play();
+            _sound.play();
+            _sound.audio.onended = () => setPlaying(false);
         } else if (!flag && _sound) {
             setPlaying(false);
             _sound.stop();
         }
     };
+    const onPlayAnimation = async () => {
+        setIsPlaying(true);
+        const { timeLine } = object.data.effects[id];
+        await wait(timeLine[0] * 1000);
+
+        if (!_sound) return;
+        start();
+        _sound?.play();
+        soundIdRef.current = setInterval(() => {
+            _sound?.play();
+        }, _sound.audio.duration * 1000);
+    };
+    const onStopAnimation = useCallback(() => {
+        setIsPlaying(false);
+        clearInterval(soundIdRef.current);
+        _sound?.stop();
+        stop();
+    }, [_sound, stop]);
+
+    useEffect(() => {
+        const { timeLine } = object.data.effects[id];
+        if (timeLine[1] <= time) onStopAnimation();
+    }, [time, id, object, onStopAnimation]);
 
     useEffect(() => {
         document.addEventListener('click', (e) => {
@@ -48,11 +79,7 @@ export const Sound = ({ sounds, object, id, onDeleteEffect }: AnimationProps) =>
     }, [divRef]);
 
     useEffect(() => {
-        const effects = object.data.effects.map((effect: EffectProps, index: number) => {
-            if (index === id) return { ...effect, timeLine: [timeMinValue, timeMaxValue] };
-            return effect;
-        });
-        object.set('data', { ...object.get('data'), effects });
+        onSetTimeLine({ object, id, timeMinValue, timeMaxValue });
     }, [timeMinValue, timeMaxValue, id, object]);
 
     return (
@@ -62,12 +89,12 @@ export const Sound = ({ sounds, object, id, onDeleteEffect }: AnimationProps) =>
                     <BiBadge className="mr-1" />
                     <h5>Sound</h5>
                 </span>
-                <div className="flex">
-                    {playing ? <MdStopCircle className="mr-3" onClick={() => onPlay(false)} /> : <MdPlayCircle className="mr-3" onClick={() => onPlay(true)} />}
-                    <span className="hidden sm:block relative">
+                <div className="hidden sm:flex">
+                    {playing ? <MdStopCircle className="mr-1" onClick={() => onPlay(false)} /> : <MdPlayCircle className="mr-1" onClick={() => onPlay(true)} />}
+                    <span className="relative">
                         <input
                             type="button"
-                            className="w-[192px] rounded-sm px-2 shadow-[0_1px_#cdd8dd] bg-[white] cursor-pointer hover:shadow-[0px_1px_5px_1px_#50bcdf]"
+                            className="w-[190px] rounded-sm px-2 shadow-[0_1px_#cdd8dd] bg-[white] cursor-pointer hover:shadow-[0px_1px_5px_1px_#50bcdf]"
                             value={soundId ? soundId : 'Select sound'}
                             onClick={() => setOpen(true)}
                             ref={inputRef}
@@ -95,8 +122,19 @@ export const Sound = ({ sounds, object, id, onDeleteEffect }: AnimationProps) =>
                 setTimeMinValue={setTimeMinValue}
                 onCheckRange={onCheckRange}
                 objectId={object.data.id}
+                isPlaying={isPlaying}
             />
-            <BiTrash className="cursor-pointer" onClick={() => onDeleteEffect(id)} />
+            <span className="flex">
+                {!isPlaying ? (
+                    <MdPlayCircleOutline className="hidden sm:block cursor-pointer mr-1" onClick={() => onPlayAnimation()} />
+                ) : (
+                    <MdOutlineStopCircle className="hidden sm:block cursor-pointer mr-1" onClick={() => onStopAnimation()} />
+                )}
+                <BiTrash
+                    className={classNames(isPlaying ? 'cursor-not-allowed' : 'cursor-pointer', 'hidden sm:block')}
+                    onClick={() => !isPlaying && onDeleteEffect(id)}
+                />
+            </span>
         </div>
     );
 };
