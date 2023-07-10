@@ -13,8 +13,8 @@ import { nanoid } from 'nanoid';
 const ImageModal = ({ onClose }: { onClose: () => void }) => {
     const editor = useAtomValue(editorAtom);
     const setObjects = useSetAtom(objectsAtom);
-    // const { data } = useApi(getImage);
-    // const list = useMemo(() => data?.filter((img) => !!img.extension && img.imageDivisionCode === '01'), [data]);
+    const { data } = useApi(getImage);
+    const list = useMemo(() => data?.filter((img) => !!img.extension && img.imageDivisionCode === '01'), [data]);
 
     const onImageClick = (img: TGetImage) => {
         fabric.Image.fromURL(`https://sol-api.esls.io/images/D1/${img.imageId}.${img.extension}`, (obj) => {
@@ -43,13 +43,13 @@ const ImageModal = ({ onClose }: { onClose: () => void }) => {
         <div className="fixed inset-20 z-10 overflow-auto bg-white rounded-md border-2 p-2">
             <h1 className="text-center text-3xl font-bold p-2">이미지</h1>
             <div className="flex flex-wrap gap-2">
-                {/* {list?.map((img) => (
+                {list?.map((img) => (
                     <div key={img.imageId}>
                         <IconButtonV1 className="w-16 h-16 border p-2 shadow rounded overflow-hidden" onClick={() => onImageClick(img)}>
                             <img src={`https://sol-api.esls.io/images/D1/${img.imageId}.${img.extension}`}></img>
                         </IconButtonV1>
                     </div>
-                ))} */}
+                ))}
             </div>
         </div>
     );
@@ -59,7 +59,6 @@ export default function InsertImage() {
     const [open, setOpen] = useState(false);
     const onInsertImageClick = () => setOpen(true);
     const onClose = () => setOpen(false);
-
     return (
         <>
             <IconButtonV1 onClick={onInsertImageClick}>
