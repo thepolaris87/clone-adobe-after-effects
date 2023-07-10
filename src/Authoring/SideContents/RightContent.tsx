@@ -1,8 +1,9 @@
-import { useAtomValue } from 'jotai';
+import { useAtom, useAtomValue } from 'jotai';
 import Input from './Components/Input';
 import { activeObjectAtom, editorAtom } from '@/atoms/atom';
-import { MouseEventHandler, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { CgEditFlipH, CgEditFlipV } from 'react-icons/cg';
+import { BsChevronDown } from 'react-icons/bs';
 type position = {
     centerX: number | undefined;
     centerY: number | undefined;
@@ -22,15 +23,18 @@ type setting = {
 export default function RightContent() {
     const editor = useAtomValue(editorAtom);
     const canvas = editor?.canvas;
-    const activeObject: any = useAtomValue(activeObjectAtom);
+    const [_activeObject, setActiveObject] = useAtom(activeObjectAtom);
     const [position, setPosition] = useState<position>({ centerX: undefined, centerY: undefined });
     const [size, setSize] = useState<size>({ width: undefined, height: undefined });
     const [scaleValue, setScaleValue] = useState<scale>({ scaleX: undefined, scaleY: undefined });
     const [setting, setSetting] = useState<setting>({ angle: undefined, opacity: undefined });
     const [flip, setFlip] = useState({ flipX: false, flipY: false });
+    const [isOpen, setIsOpen] = useState({ position: false, size: false, rotate: false, opacity: false });
+    const activeObject = _activeObject as fabric.Object;
 
     //초기화
     useEffect(() => {
+        if (!activeObject) return;
         setPosition({ centerX: activeObject.left, centerY: activeObject.top });
         setSize({ width: activeObject.width, height: activeObject.height });
         setScaleValue({ scaleX: activeObject.scaleX, scaleY: activeObject.scaleY });
@@ -40,6 +44,7 @@ export default function RightContent() {
     useEffect(() => {
         const handleObjectModified = (e: fabric.IEvent) => {
             setSetting((prev) => ({ ...prev, opacity: e.target?.opacity }));
+            setSize({ width: e.target?.width, height: e.target?.height });
         };
         const handleObjectMoving = (e: fabric.IEvent) => {
             setPosition({ centerX: e.target?.left, centerY: e.target?.top });
@@ -105,102 +110,155 @@ export default function RightContent() {
 
     //Size
     const inputScale = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (Object.keys(activeObject).length === 0) return;
+        if (!activeObject) return;
 
         if (e.target.name === 'scaleX') {
             setScaleValue((prev) => ({ ...prev, scaleX: Number(e.target.value) }));
-            activeObject.set({ scaleX: e.target.value, sclaeY: activeObject.scaleY });
+            activeObject.set({ scaleX: Number(e.target.value), scaleY: Number(activeObject.scaleY) });
         } else if (e.target.name === 'scaleY') {
             setScaleValue((prev) => ({ ...prev, scaleY: Number(e.target.value) }));
-            activeObject.set({ scaleX: activeObject.scaleX, scaleY: e.target.value });
+            activeObject.set({ scaleX: activeObject.scaleX, scaleY: Number(e.target.value) });
         }
         canvas?.renderAll();
     };
 
     //Rotate
     const inputAngle = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (Object.keys(activeObject).length === 0) return;
+        if (!activeObject) return;
 
         setSetting((prev) => ({ ...prev, angle: Number(e.target.value) }));
-        activeObject.rotate(e.target.value);
+        activeObject.rotate(Number(e.target.value));
         canvas?.renderAll();
     };
 
     const inputOpacity = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (Object.keys(activeObject).length === 0) return;
+        if (!activeObject) return;
         setSetting((prev) => ({ ...prev, opacity: Number(e.target.value) }));
-        activeObject.set({ opacity: e.target.value });
+        activeObject.set({ opacity: Number(e.target.value) });
         canvas?.renderAll();
     };
 
     const onFlipXClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-        if (Object.keys(activeObject).length === 0) return;
+        if (!activeObject) return;
         setFlip((prev) => ({ ...prev, flipX: !flip.flipX }));
         activeObject.set('flipX', !flip.flipX);
         canvas?.renderAll();
     };
 
     const onFlipYClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-        if (Object.keys(activeObject).length === 0) return;
+        if (!activeObject) return;
         setFlip((prev) => ({ ...prev, flipY: !flip.flipY }));
         activeObject.set('flipY', !flip.flipY);
         canvas?.renderAll();
     };
+
+    const onOpenClick = (el: string) => {
+        setIsOpen((prev) => ({ ...prev, el: !`isOpen.${el}` }));
+    };
+
     return (
         <>
             <div>
                 <div className="font-extrabold pt-3">Transform</div>
-                <div className="border-b pb-3 w-40">
-                    <div>Position</div>
-                    <div className="flex gap-3">
-                        <Input title="Center-X" name="centerX" value={position.centerX} onChange={(e: React.ChangeEvent<HTMLInputElement>) => inputCenter(e)} />
-                        <Input title="Center-Y" name="centerY" value={position.centerY} onChange={(e: React.ChangeEvent<HTMLInputElement>) => inputCenter(e)} />
-                    </div>
-                </div>
-                <div className="border-b pb-3 w-40">
-                    <div>Size</div>
-                    <div>
-                        <div className="flex gap-3">
-                            <Input title="Width" value={size.width} readOnly={true} />
-
-                            <Input title="Height" value={size.height} readOnly={true} />
+                <div className="border-b pb-3 w-2/3">
+                    <div
+                        className="flex justify-between cursor-pointer bg-gray-300 cursor-pointer p-1"
+                        onClick={() => setIsOpen((prev) => ({ ...prev, position: !isOpen.position }))}
+                    >
+                        <div>Position</div>
+                        <div>
+                            <BsChevronDown className="w-4" />
                         </div>
+                    </div>
+                    {isOpen.position && (
+                        <div className="flex gap-3">
+                            <Input
+                                title="Center-X"
+                                name="centerX"
+                                value={position.centerX}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => inputCenter(e)}
+                            />
+                            <Input
+                                title="Center-Y"
+                                name="centerY"
+                                value={position.centerY}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => inputCenter(e)}
+                            />
+                        </div>
+                    )}
+                </div>
+                <div className="border-b pb-3 w-2/3">
+                    <div className="flex justify-between bg-gray-300 cursor-pointer p-1" onClick={() => setIsOpen((prev) => ({ ...prev, size: !isOpen.size }))}>
+                        <div>Size</div>
+                        <div>
+                            <BsChevronDown className="w-4" />
+                        </div>
+                    </div>
+                    {isOpen.size && (
                         <div>
                             <div className="flex gap-3">
-                                <Input
-                                    title="Scale-X"
-                                    name="scaleX"
-                                    value={scaleValue.scaleX}
-                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => inputScale(e)}
-                                />
-                                <Input
-                                    title="Scale-Y"
-                                    name="scaleY"
-                                    value={scaleValue.scaleY}
-                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => inputScale(e)}
-                                />
+                                <Input title="Width" value={size.width} readOnly={true} />
+
+                                <Input title="Height" value={size.height} readOnly={true} />
+                            </div>
+                            <div>
+                                <div className="flex gap-3">
+                                    <Input
+                                        title="Scale-X"
+                                        name="scaleX"
+                                        value={scaleValue.scaleX}
+                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => inputScale(e)}
+                                    />
+                                    <Input
+                                        title="Scale-Y"
+                                        name="scaleY"
+                                        value={scaleValue.scaleY}
+                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => inputScale(e)}
+                                    />
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    )}
                 </div>
-                <div className="border-b pb-3 w-40">
-                    <div>Rotate</div>
-                    <div className="flex gap-3">
-                        <Input title="Angle" value={setting.angle} onChange={(e: React.ChangeEvent<HTMLInputElement>) => inputAngle(e)} />
-                        <div onClick={(e: React.MouseEvent<HTMLDivElement, MouseEvent>) => onFlipXClick(e)}>
-                            <CgEditFlipH className="mt-6" />
-                        </div>
-                        <div onClick={(e: React.MouseEvent<HTMLDivElement, MouseEvent>) => onFlipYClick(e)}>
-                            <CgEditFlipV className="mt-6" />
+                <div className="border-b pb-3 w-2/3">
+                    <div
+                        className="flex justify-between bg-gray-300 p-1 cursor-pointer"
+                        onClick={() => setIsOpen((prev) => ({ ...prev, rotate: !isOpen.rotate }))}
+                    >
+                        <div>Rotate</div>
+                        <div>
+                            <BsChevronDown className="w-4" />
                         </div>
                     </div>
+                    {isOpen.rotate && (
+                        <div className="flex gap-3">
+                            <Input title="Angle" value={setting.angle} onChange={(e: React.ChangeEvent<HTMLInputElement>) => inputAngle(e)} />
+                            <div onClick={(e: React.MouseEvent<HTMLDivElement, MouseEvent>) => onFlipXClick(e)}>
+                                <CgEditFlipH className="mt-4" />
+                            </div>
+                            <div onClick={(e: React.MouseEvent<HTMLDivElement, MouseEvent>) => onFlipYClick(e)}>
+                                <CgEditFlipV className="mt-4" />
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
             <div>
-                <div className="font-extrabold pt-6">Attribute</div>
-                <div>
-                    <Input title="Opacity" value={setting.opacity} onChange={(e: React.ChangeEvent<HTMLInputElement>) => inputOpacity(e)} />
+                <div className="font-extrabold pt-4">Attribute</div>
+                <div
+                    className="flex justify-between w-2/3 bg-gray-300 cursor-pointer p-1"
+                    onClick={() => setIsOpen((prev) => ({ ...prev, opacity: !isOpen.opacity }))}
+                >
+                    <div className="">Opacity</div>
+                    <div>
+                        <BsChevronDown className="w-4" />
+                    </div>
                 </div>
+                {isOpen.opacity && (
+                    <div>
+                        <Input title="Opacity" value={setting.opacity} onChange={(e: React.ChangeEvent<HTMLInputElement>) => inputOpacity(e)} />
+                    </div>
+                )}
             </div>
         </>
     );
