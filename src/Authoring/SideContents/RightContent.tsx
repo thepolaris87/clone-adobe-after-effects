@@ -130,7 +130,6 @@ export default function RightContent() {
 
     const onFlipYClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         if (Object.keys(activeObject).length === 0) return;
-        console.log(activeObject);
         setFlip((prev) => ({ ...prev, flipY: !flip.flipY }));
         activeObject.set('flipY', !flip.flipY);
         canvas?.renderAll();
