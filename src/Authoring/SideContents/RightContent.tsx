@@ -31,33 +31,40 @@ export default function RightContent() {
 
     //초기화
     useEffect(() => {
-        if (Object.keys(activeObject).length === 0) {
-            setPosition({ centerX: undefined, centerY: undefined });
-            setSize({ width: undefined, height: undefined });
-            setScaleValue({ scaleX: undefined, scaleY: undefined });
-            setSetting({ angle: undefined, opacity: undefined });
-            return;
-        }
         setPosition({ centerX: activeObject.left, centerY: activeObject.top });
         setSize({ width: activeObject.width, height: activeObject.height });
         setScaleValue({ scaleX: activeObject.scaleX, scaleY: activeObject.scaleY });
-        activeObject.angle ? setSetting((prev) => ({ ...prev, angle: activeObject.angle })) : setSetting((prev) => ({ ...prev, angle: 0 }));
-        setSetting((prev) => ({ ...prev, opacity: activeObject.opacity }));
-    }, [activeObject]);
+        setSetting({ angle: activeObject.angle, opacity: activeObject.opacity });
+    }, [activeObject, canvas]);
 
     useEffect(() => {
-        const handleObjectModified = (e: any) => {
-            setSetting((prev) => ({ ...prev, opacity: e.target.opacity }));
+        const handleObjectModified = (e: fabric.IEvent) => {
+            setSetting((prev) => ({ ...prev, opacity: e.target?.opacity }));
         };
         const handleObjectMoving = (e: fabric.IEvent) => {
             setPosition({ centerX: e.target?.left, centerY: e.target?.top });
         };
-        const handleObjectScaling = (e: any) => {
-            setScaleValue({ scaleX: e.target.scaleX, scaleY: e.target.scaleY });
+        const handleObjectScaling = (e: fabric.IEvent) => {
+            setScaleValue({ scaleX: e.target?.scaleX, scaleY: e.target?.scaleY });
         };
 
-        const handleObjectRotating = (e: any) => {
-            setSetting((prev) => ({ ...prev, angle: e.target.angle }));
+        const handleObjectRotating = (e: fabric.IEvent) => {
+            setSetting((prev) => ({ ...prev, angle: e.target?.angle }));
+        };
+
+        const handleSelectionUpdated = (e: fabric.IEvent) => {
+            if (!e.selected) return;
+            setPosition({ centerX: e.selected[0].left, centerY: e.selected[0].top });
+            setSize({ width: e.selected[0].width, height: e.selected[0].height });
+            setScaleValue({ scaleX: e.selected[0].scaleX, scaleY: e.selected[0].scaleY });
+            setSetting({ angle: e.selected[0].angle, opacity: e.selected[0].opacity });
+        };
+
+        const handleSelectionCleared = () => {
+            setPosition({ centerX: undefined, centerY: undefined });
+            setSize({ width: undefined, height: undefined });
+            setScaleValue({ scaleX: undefined, scaleY: undefined });
+            setSetting({ angle: undefined, opacity: undefined });
         };
 
         if (canvas) {
@@ -65,13 +72,18 @@ export default function RightContent() {
             canvas.on('object:moving', handleObjectMoving);
             canvas.on('object:scaling', handleObjectScaling);
             canvas.on('object:rotating', handleObjectRotating);
+            canvas.on('selection:updated', handleSelectionUpdated);
+            canvas.on('selection:cleared', handleSelectionCleared);
         }
 
         return () => {
             if (canvas) {
+                canvas.off('object:modified', handleObjectModified);
                 canvas.off('object:moving', handleObjectMoving);
                 canvas.off('object:scaling', handleObjectScaling);
                 canvas.off('object:rotating', handleObjectRotating);
+                canvas.off('selection:updated', handleSelectionUpdated);
+                canvas.on('selection:cleared', handleSelectionCleared);
             }
         };
     }, [canvas]);
