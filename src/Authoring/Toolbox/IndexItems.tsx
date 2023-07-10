@@ -1,21 +1,28 @@
 import { activeObjectAtom } from '@/atoms/atom';
-import { useAtomValue } from 'jotai';
+import { useAtomValue, useSetAtom } from 'jotai';
 import { IconButtonV1 } from '@/components/Button';
 import { BsChevronDoubleUp, BsChevronUp, BsChevronDown, BsChevronDoubleDown } from 'react-icons/bs';
+import { indexAtom } from './atom';
 
 export default function IndexItems() {
     const activeObject = useAtomValue(activeObjectAtom) as fabric.Object;
+    const setIndexClick = useSetAtom(indexAtom);
+
     const doubleUp = () => {
         activeObject.bringToFront();
+        setIndexClick(true);
     };
     const up = () => {
         activeObject.bringForward();
+        setIndexClick(true);
     };
     const doubleDown = () => {
         activeObject.sendToBack();
+        setIndexClick(true);
     };
     const down = () => {
         activeObject.sendBackwards();
+        setIndexClick(true);
     };
 
     return (
