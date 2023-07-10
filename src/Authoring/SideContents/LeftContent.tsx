@@ -106,7 +106,11 @@ export default function LeftContent() {
                                         {(provided) => (
                                             <div
                                                 key={el.data.id}
-                                                className="flex bg-white w-full h-12 mt-2 rounded-md justify-center px-2"
+                                                className={
+                                                    el === activeObject
+                                                        ? `flex bg-white w-full h-12 mt-2 rounded-md justify-center px-2 border-blue-300 border-4`
+                                                        : `flex bg-white w-full h-12 mt-2 rounded-md justify-center px-2`
+                                                }
                                                 ref={provided.innerRef}
                                                 {...provided.draggableProps}
                                                 {...provided.dragHandleProps}
