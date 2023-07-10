@@ -6,6 +6,7 @@ import { MdChevronRight, MdKeyboardArrowDown } from 'react-icons/md';
 import { BiCaretDownSquare } from 'react-icons/bi';
 import { effects } from '../Effects/Effect';
 import { sound } from '@/util/util';
+import css from '../css/TimeLine.module.css';
 import { fadeIn, fadeOut, rotate, move, scale, opacity, soundCheck } from '@/util/index';
 
 export const AnimationList = ({ object, sounds }: { object: fabric.Object; sounds?: TGetSound[] }) => {
@@ -17,6 +18,7 @@ export const AnimationList = ({ object, sounds }: { object: fabric.Object; sound
     const [isPlay, setIsPlay] = useState(false); // 개별 실행
     const [effect, setEffect] = useState<string>();
     const [update, setUpdate] = useState(true);
+    const [value, setValue] = useState(0);
     const [_sound, setSound] = useState<ReturnType<typeof sound>>();
     const timesRef = useRef<number[]>([]);
     const [cancel, setCancel] = useState<any>([]);
@@ -55,7 +57,6 @@ export const AnimationList = ({ object, sounds }: { object: fabric.Object; sound
             const [startTime, endTime] = effect.timeLine;
             const flag = timeLineRef.current.index === idx;
             let _cancel: () => void;
-            console.log(endTime);
             timeRef.current = setTimeout(() => {
                 if (effect.type === 'FADEIN') _cancel = fadeIn({ effect, object, editor, endTime, ...(flag && { setIsPlaying: setIsPlaying }) });
                 if (effect.type === 'FADEOUT') _cancel = fadeOut({ effect, object, editor, endTime, ...(flag && { setIsPlaying: setIsPlaying }) });
@@ -151,17 +152,26 @@ export const AnimationList = ({ object, sounds }: { object: fabric.Object; sound
                     </span>
                 </div>
             </div>
-            <div className="flex justify-between p-2">
-                <button className="flex cursor-pointer" onClick={() => setTransForm(!transform)}>
+            <div className="flex flex-wrap justify-between items-center p-[8px_4px]">
+                <button className="w-[40.3%] flex cursor-pointer" onClick={() => setTransForm(!transform)}>
                     {transform ? <MdKeyboardArrowDown /> : <MdChevronRight />}
                     Transform
                 </button>
+                <input
+                    className="w-[54.5%] cursor-pointer"
+                    type="range"
+                    min={1}
+                    max={100}
+                    value={value}
+                    step={1}
+                    onChange={(e) => setValue(e.target.valueAsNumber)}
+                />
                 {isPlaying ? (
-                    <button className="bg-[#CC0000] text-[white] p-[4px_16px] rounded-[8px] hover:bg-[#FF6666]" onClick={onStop}>
+                    <button className="bg-[#CC0000] w-[60px] text-[white] p-[4px_12px] rounded-[8px] hover:bg-[#FF6666]" onClick={onStop}>
                         Stop
                     </button>
                 ) : (
-                    <button className="bg-[orange] text-[white] p-[4px_16px] rounded-[8px] hover:bg-[#FFB129]" onClick={onPlay}>
+                    <button className="bg-[orange] w-[60px] text-[white] p-[4px_12px] rounded-[8px] hover:bg-[#FFB129]" onClick={onPlay}>
                         Play
                     </button>
                 )}
