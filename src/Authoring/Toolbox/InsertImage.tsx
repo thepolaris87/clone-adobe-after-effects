@@ -59,7 +59,6 @@ export default function InsertImage() {
     const [open, setOpen] = useState(false);
     const onInsertImageClick = () => setOpen(true);
     const onClose = () => setOpen(false);
-
     return (
         <>
             <IconButtonV1 onClick={onInsertImageClick}>
