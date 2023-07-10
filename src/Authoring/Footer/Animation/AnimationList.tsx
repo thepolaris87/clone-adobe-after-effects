@@ -6,8 +6,7 @@ import { MdChevronRight, MdKeyboardArrowDown } from 'react-icons/md';
 import { BiCaretDownSquare } from 'react-icons/bi';
 import { effects } from '../Effects/Effect';
 import { sound } from '@/util/util';
-import { fadeIn, fadeOut, rotate, move, scale, opacity, soundComponent } from '@/util/index';
-import { useTimeCheck } from '@/hooks/useTimeCheck';
+import { fadeIn, fadeOut, rotate, move, scale, opacity, soundCheck } from '@/util/index';
 
 export const AnimationList = ({ object, sounds }: { object: fabric.Object; sounds?: TGetSound[] }) => {
     const editor = useAtomValue(editorAtom);
@@ -25,7 +24,6 @@ export const AnimationList = ({ object, sounds }: { object: fabric.Object; sound
     const timeLineRef = useRef({ time: 0, index: 0 });
     const timeRef = useRef(0);
     const soundIdRef = useRef(0);
-    const { stop, start, time } = useTimeCheck();
 
     const onAddEffect = (title: TEffect) => {
         const option = effects[title].option;
@@ -43,7 +41,7 @@ export const AnimationList = ({ object, sounds }: { object: fabric.Object; sound
         setUpdate(!update);
         setEndTime();
     };
-    const onSetCancel = (_cancel: any) => {
+    const onSetCancel = (_cancel: () => void) => {
         setCancel((prev: any) => {
             return [...prev, _cancel];
         });
@@ -52,12 +50,11 @@ export const AnimationList = ({ object, sounds }: { object: fabric.Object; sound
         const arr: number[] = [];
         setCancel([]);
         setIsPlaying(true);
-        start();
         const obj = object.get('data');
         obj.effects.map(async (effect: EffectProps, idx: number) => {
             const [startTime, endTime] = effect.timeLine;
             const flag = timeLineRef.current.index === idx;
-            let _cancel: any;
+            let _cancel: () => void;
             console.log(endTime);
             timeRef.current = setTimeout(() => {
                 if (effect.type === 'FADEIN') _cancel = fadeIn({ effect, object, editor, endTime, ...(flag && { setIsPlaying: setIsPlaying }) });
@@ -67,11 +64,14 @@ export const AnimationList = ({ object, sounds }: { object: fabric.Object; sound
                 if (effect.type === 'ROTATE') _cancel = rotate({ effect, object, editor, endTime, ...(flag && { setIsPlaying: setIsPlaying }) });
                 if (effect.type === 'OPACITY') opacity({ effect, object, editor, endTime, onSetCancel, ...(flag && { setIsPlaying: setIsPlaying }) });
                 if (effect.type === 'SOUND') {
-                    if (!effect?.option?.src) return;
+                    if (!effect?.option?.src && obj.effects.length - 1 === idx) {
+                        setIsPlaying(false);
+                        return;
+                    }
                     const audio = sound(`https://sol-api.esls.io/sounds/D1/${effect?.option?.src}.mp3`);
                     setSound(audio);
                     if (!audio) return;
-                    soundIdRef.current = soundComponent({ soundIdRef, _sound: audio, endTime, ...(flag && { setIsPlaying: setIsPlaying }) });
+                    soundIdRef.current = soundCheck({ soundIdRef, _sound: audio, endTime, ...(flag && { setIsPlaying: setIsPlaying }) });
                 }
                 setCancel((prev: any) => {
                     return [...prev, _cancel];
@@ -86,7 +86,7 @@ export const AnimationList = ({ object, sounds }: { object: fabric.Object; sound
         timesRef.current.forEach((time) => {
             clearTimeout(time);
         }); // 아직 실행되지 않은 애니메이션 취소
-        cancel.forEach((_cancel: any) => {
+        cancel.forEach((_cancel: () => void) => {
             _cancel?.();
         }); // 실행 중인 애니메이션 취소
         clearTimeout(soundIdRef.current);
@@ -118,7 +118,7 @@ export const AnimationList = ({ object, sounds }: { object: fabric.Object; sound
     return (
         <div
             className="rounded-[8px] mb-4 p-[4px_10px] shadow-[1px_3px_5px_1px_#cdd8dd] cursor-pointer"
-            style={{ backgroundColor: activeObject.data && activeObject.data.id === object.data.id ? '#dddbdb' : '#ecebeb' }}
+            style={{ backgroundColor: activeObject && activeObject.data.id === object.data.id ? '#dddbdb' : '#ecebeb' }}
             onClick={() => {
                 editor?.canvas.setActiveObject(object);
                 editor?.canvas.renderAll();
@@ -169,79 +169,24 @@ export const AnimationList = ({ object, sounds }: { object: fabric.Object; sound
             {transform ? (
                 <div className="p-[3px_1px_3px_10px]">
                     {object.data.effects.map((effects: EffectProps, index: number) => {
+                        const data = {
+                            object: object,
+                            id: index,
+                            onDeleteEffect: onDeleteEffect,
+                            isPlay: isPlaying,
+                            setEndTime: setEndTime,
+                            onSetPlay: onSetPlay,
+                            sounds: sounds
+                        };
                         return (
                             <React.Fragment key={index}>
-                                {effects.type === 'FADEIN' && (
-                                    <FadeIn
-                                        object={object}
-                                        id={index}
-                                        onDeleteEffect={onDeleteEffect}
-                                        isPlay={isPlaying}
-                                        setEndTime={setEndTime}
-                                        onSetPlay={onSetPlay}
-                                    />
-                                )}
-                                {effects.type === 'FADEOUT' && (
-                                    <FadeOut
-                                        object={object}
-                                        id={index}
-                                        onDeleteEffect={onDeleteEffect}
-                                        isPlay={isPlaying}
-                                        setEndTime={setEndTime}
-                                        onSetPlay={onSetPlay}
-                                    />
-                                )}
-                                {effects.type === 'MOVE' && (
-                                    <Move
-                                        object={object}
-                                        id={index}
-                                        onDeleteEffect={onDeleteEffect}
-                                        isPlay={isPlaying}
-                                        setEndTime={setEndTime}
-                                        onSetPlay={onSetPlay}
-                                    />
-                                )}
-                                {effects.type === 'SCALE' && (
-                                    <Scale
-                                        object={object}
-                                        id={index}
-                                        onDeleteEffect={onDeleteEffect}
-                                        isPlay={isPlaying}
-                                        setEndTime={setEndTime}
-                                        onSetPlay={onSetPlay}
-                                    />
-                                )}
-                                {effects.type === 'ROTATE' && (
-                                    <Rotate
-                                        object={object}
-                                        id={index}
-                                        onDeleteEffect={onDeleteEffect}
-                                        isPlay={isPlaying}
-                                        setEndTime={setEndTime}
-                                        onSetPlay={onSetPlay}
-                                    />
-                                )}
-                                {effects.type === 'OPACITY' && (
-                                    <Opacity
-                                        object={object}
-                                        id={index}
-                                        onDeleteEffect={onDeleteEffect}
-                                        isPlay={isPlaying}
-                                        setEndTime={setEndTime}
-                                        onSetPlay={onSetPlay}
-                                    />
-                                )}
-                                {effects.type === 'SOUND' && (
-                                    <Sound
-                                        sounds={sounds}
-                                        object={object}
-                                        id={index}
-                                        onDeleteEffect={onDeleteEffect}
-                                        isPlay={isPlaying}
-                                        setEndTime={setEndTime}
-                                        onSetPlay={onSetPlay}
-                                    />
-                                )}
+                                {effects.type === 'FADEIN' && <FadeIn data={data} />}
+                                {effects.type === 'FADEOUT' && <FadeOut data={data} />}
+                                {effects.type === 'MOVE' && <Move data={data} />}
+                                {effects.type === 'SCALE' && <Scale data={data} />}
+                                {effects.type === 'ROTATE' && <Rotate data={data} />}
+                                {effects.type === 'OPACITY' && <Opacity data={data} />}
+                                {effects.type === 'SOUND' && <Sound data={data} />}
                             </React.Fragment>
                         );
                     })}

@@ -1,6 +1,6 @@
 import { sound } from './util';
 
-export const soundComponent = ({
+export const soundCheck = ({
     soundIdRef,
     _sound,
     endTime,

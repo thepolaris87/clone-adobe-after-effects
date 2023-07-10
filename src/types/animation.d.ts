@@ -17,13 +17,15 @@ type EffectProps = {
 };
 
 type AnimationProps = {
-    sounds?: TGetSound[];
-    object: fabric.Object;
-    id: number;
-    onDeleteEffect: (value: number) => void;
-    isPlay: boolean;
-    setEndTime: () => void;
-    onSetPlay: (value: boolean) => void;
+    data: {
+        sounds?: TGetSound[];
+        object: fabric.Object;
+        id: number;
+        onDeleteEffect: (value: number) => void;
+        isPlay: boolean;
+        setEndTime: () => void;
+        onSetPlay: (value: boolean) => void;
+    };
 };
 
 type PlayEffectProps = {

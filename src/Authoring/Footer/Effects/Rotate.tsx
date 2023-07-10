@@ -8,7 +8,8 @@ import { useAtomValue } from 'jotai';
 import { onSetTimeLine } from '@/util/util';
 import { rotate } from '@/util';
 
-export const Rotate = ({ object, id, onDeleteEffect, isPlay, setEndTime, onSetPlay }: AnimationProps) => {
+export const Rotate = ({ data }: AnimationProps) => {
+    const { object, id, onDeleteEffect, isPlay, setEndTime, onSetPlay } = data;
     const editor = useAtomValue(editorAtom);
     const [cancel, setCancel] = useState<any>();
     const [isPlaying, setIsPlaying] = useState(false);

@@ -8,7 +8,8 @@ import { useAtomValue } from 'jotai';
 import { onSetTimeLine } from '@/util/util';
 import { scale } from '@/util';
 
-export const Scale = ({ object, id, onDeleteEffect, isPlay, setEndTime, onSetPlay }: AnimationProps) => {
+export const Scale = ({ data }: AnimationProps) => {
+    const { object, id, onDeleteEffect, isPlay, setEndTime, onSetPlay } = data;
     const editor = useAtomValue(editorAtom);
     const [isPlaying, setIsPlaying] = useState(false);
     const [cancel, setCancel] = useState<any>();

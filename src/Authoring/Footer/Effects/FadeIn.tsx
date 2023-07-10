@@ -8,13 +8,15 @@ import { useAtomValue } from 'jotai';
 import { fadeIn } from '@/util';
 import { onSetTimeLine } from '@/util/util';
 
-export const FadeIn = ({ object, id, onDeleteEffect, isPlay, setEndTime, onSetPlay }: AnimationProps) => {
+export const FadeIn = ({ data }: AnimationProps) => {
+    const { object, id, onDeleteEffect, isPlay, setEndTime, onSetPlay } = data;
     const editor = useAtomValue(editorAtom);
     const [isPlaying, setIsPlaying] = useState(false);
     const [timeMinValue, setTimeMinValue] = useState(0);
     const [timeMaxValue, setTimeMaxValue] = useState(100);
     const [cancel, setCancel] = useState<any>();
     const timeRef = useRef(0);
+    9;
 
     const onCheckRange = () => {
         if (timeMaxValue - timeMinValue > 1) return;

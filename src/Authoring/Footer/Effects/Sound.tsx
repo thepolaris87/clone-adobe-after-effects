@@ -6,9 +6,10 @@ import { Slider } from '../components/Slider';
 import { sound } from '@/util/util';
 import { MdPlayCircleOutline } from 'react-icons/md';
 import { wait, onSetTimeLine } from '@/util/util';
-import { soundComponent } from '@/util/soundComponent';
+import { soundCheck } from '@/util/soundCheck';
 
-export const Sound = ({ sounds, object, id, onDeleteEffect, isPlay, setEndTime, onSetPlay }: AnimationProps) => {
+export const Sound = ({ data }: AnimationProps) => {
+    const { sounds, object, id, onDeleteEffect, isPlay, setEndTime, onSetPlay } = data;
     const [open, setOpen] = useState(false);
     const [soundId, setSoundId] = useState<string>();
     const [_sound, setSound] = useState<ReturnType<typeof sound>>();
@@ -53,7 +54,7 @@ export const Sound = ({ sounds, object, id, onDeleteEffect, isPlay, setEndTime, 
         await wait(timeLine[0] * 1000);
         if (!_sound) return;
         const endTime = timeLine[1];
-        soundIdRef.current = soundComponent({ soundIdRef, _sound, endTime, onStopAnimation });
+        soundIdRef.current = soundCheck({ soundIdRef, _sound, endTime, onStopAnimation });
     };
     const onStopAnimation = useCallback(() => {
         setIsPlaying(false);
