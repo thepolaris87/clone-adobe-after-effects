@@ -2,22 +2,23 @@ import { useAtomValue } from 'jotai';
 import Input from './Components/Input';
 import { activeObjectAtom, editorAtom } from '@/atoms/atom';
 import { MouseEventHandler, useEffect, useState } from 'react';
+import { CgEditFlipH, CgEditFlipV } from 'react-icons/cg';
 type position = {
     centerX: number | undefined;
     centerY: number | undefined;
-}
+};
 type size = {
     width: number | undefined;
     height: number | undefined;
-}
+};
 type scale = {
     scaleX: number | undefined;
     scaleY: number | undefined;
-}
+};
 type setting = {
     angle: number | undefined;
     opacity: number | undefined;
-}
+};
 export default function RightContent() {
     const editor = useAtomValue(editorAtom);
     const canvas = editor?.canvas;
@@ -26,6 +27,7 @@ export default function RightContent() {
     const [size, setSize] = useState<size>({ width: undefined, height: undefined });
     const [scaleValue, setScaleValue] = useState<scale>({ scaleX: undefined, scaleY: undefined });
     const [setting, setSetting] = useState<setting>({ angle: undefined, opacity: undefined });
+    const [flip, setFlip] = useState({ flipX: false, flipY: false });
 
     //초기화
     useEffect(() => {
@@ -118,6 +120,21 @@ export default function RightContent() {
         activeObject.set({ opacity: e.target.value });
         canvas?.renderAll();
     };
+
+    const onFlipXClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        if (Object.keys(activeObject).length === 0) return;
+        setFlip((prev) => ({ ...prev, flipX: !flip.flipX }));
+        activeObject.set('flipX', !flip.flipX);
+        canvas?.renderAll();
+    };
+
+    const onFlipYClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        if (Object.keys(activeObject).length === 0) return;
+        console.log(activeObject);
+        setFlip((prev) => ({ ...prev, flipY: !flip.flipY }));
+        activeObject.set('flipY', !flip.flipY);
+        canvas?.renderAll();
+    };
     return (
         <>
             <div>
@@ -125,18 +142,8 @@ export default function RightContent() {
                 <div className="border-b pb-3 w-40">
                     <div>Position</div>
                     <div className="flex gap-3">
-                        <Input
-                            title="Center-X"
-                            name="centerX"
-                            value={position.centerX}
-                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => inputCenter(e)}
-                        />
-                        <Input
-                            title="Center-Y"
-                            name="centerY"
-                            value={position.centerY}
-                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => inputCenter(e)}
-                        />
+                        <Input title="Center-X" name="centerX" value={position.centerX} onChange={(e: React.ChangeEvent<HTMLInputElement>) => inputCenter(e)} />
+                        <Input title="Center-Y" name="centerY" value={position.centerY} onChange={(e: React.ChangeEvent<HTMLInputElement>) => inputCenter(e)} />
                     </div>
                 </div>
                 <div className="border-b pb-3 w-40">
@@ -167,7 +174,15 @@ export default function RightContent() {
                 </div>
                 <div className="border-b pb-3 w-40">
                     <div>Rotate</div>
-                    <Input title="Angle" value={setting.angle} onChange={(e: React.ChangeEvent<HTMLInputElement>) => inputAngle(e)} />
+                    <div className="flex gap-3">
+                        <Input title="Angle" value={setting.angle} onChange={(e: React.ChangeEvent<HTMLInputElement>) => inputAngle(e)} />
+                        <div onClick={(e: React.MouseEvent<HTMLDivElement, MouseEvent>) => onFlipXClick(e)}>
+                            <CgEditFlipH className="mt-6" />
+                        </div>
+                        <div onClick={(e: React.MouseEvent<HTMLDivElement, MouseEvent>) => onFlipYClick(e)}>
+                            <CgEditFlipV className="mt-6" />
+                        </div>
+                    </div>
                 </div>
             </div>
             <div>
