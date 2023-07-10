@@ -86,7 +86,7 @@ export const Move = ({ data }: AnimationProps) => {
                 objectId={object.data.id}
                 isPlaying={isPlaying}
             />
-            <span className="flex w-[4%]">
+            <span className="flex w-[60px]">
                 {!isPlay &&
                     (!isPlaying ? (
                         <MdPlayCircleOutline className="hidden sm:block cursor-pointer mr-1" onClick={() => onPlayAnimation()} />
