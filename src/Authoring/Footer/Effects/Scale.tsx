@@ -8,7 +8,8 @@ import { useAtomValue } from 'jotai';
 import { onSetTimeLine } from '@/util/util';
 import { scale } from '@/util';
 
-export const Scale = ({ object, id, onDeleteEffect, isPlay, setEndTime, onSetPlay }: AnimationProps) => {
+export const Scale = ({ data }: AnimationProps) => {
+    const { object, id, onDeleteEffect, isPlay, setEndTime, onSetPlay } = data;
     const editor = useAtomValue(editorAtom);
     const [isPlaying, setIsPlaying] = useState(false);
     const [cancel, setCancel] = useState<any>();
@@ -48,9 +49,7 @@ export const Scale = ({ object, id, onDeleteEffect, isPlay, setEndTime, onSetPla
         setIsPlaying(false);
         onSetPlay(false);
         clearTimeout(timeRef.current);
-        for (let i = 0; i <= 1; i++) {
-            cancel?.();
-        }
+        cancel?.();
         object.set({ scaleX: originValue.scaleX, scaleY: originValue.scaleY });
     };
 

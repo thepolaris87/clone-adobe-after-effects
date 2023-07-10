@@ -1,6 +1,6 @@
 import { editorAtom } from '@/atoms/atom';
 import { activeObjectAtom } from '@/atoms/atom';
-import { useAtom, useAtomValue } from 'jotai';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { useEffect, useState } from 'react';
 import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd';
 import { indexAtom } from '../Toolbox/atom';
@@ -9,6 +9,7 @@ export default function LeftContent() {
     const editor = useAtomValue(editorAtom);
     const canvas = editor?.canvas;
     const activeObject: fabric.Object | null = useAtomValue(activeObjectAtom);
+    const setActiveObject = useSetAtom(activeObjectAtom);
     const [activeSrc, setActiveSrc] = useState('');
     const objects = canvas?.getObjects();
     const [items, setItems] = useState<Object[]>(objects ? objects : []);
@@ -59,6 +60,7 @@ export default function LeftContent() {
 
     const selectObject = (el: fabric.Object) => {
         canvas?.setActiveObject(el);
+        setActiveObject(el);
         el.hasControls = true;
         el.hasBorders = true;
         canvas?.renderAll();

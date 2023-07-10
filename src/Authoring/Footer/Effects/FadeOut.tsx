@@ -8,7 +8,8 @@ import { useAtomValue } from 'jotai';
 import { onSetTimeLine } from '@/util/util';
 import { fadeOut } from '@/util';
 
-export const FadeOut = ({ object, id, onDeleteEffect, isPlay, setEndTime, onSetPlay }: AnimationProps) => {
+export const FadeOut = ({ data }: AnimationProps) => {
+    const { object, id, onDeleteEffect, isPlay, setEndTime, onSetPlay } = data;
     const editor = useAtomValue(editorAtom);
     const [cancel, setCancel] = useState<any>();
     const [isPlaying, setIsPlaying] = useState(false);
