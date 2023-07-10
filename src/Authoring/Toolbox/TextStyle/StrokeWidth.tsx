@@ -9,14 +9,14 @@ const width = [1, 2, 3, 4, 8, 12, 16, 24];
 export default function StrokeWidth() {
     const editor = useAtomValue(editorAtom);
     const canvas = editor?.canvas;
-    const activeObject: any = useAtomValue(activeObjectAtom);
+    const activeObject: fabric.Object | null = useAtomValue(activeObjectAtom);
     const [isOpen, setIsOpen] = useState(false);
     const [currWidth, setCurrWidth] = useState<number>();
     const outsideRef = useRef<HTMLDivElement | null>(null);
 
     useEffect(() => {
-        const handleClickOutside = (e: any) => {
-            if (outsideRef.current && !outsideRef.current.contains(e.target)) {
+        const handleClickOutside = (e: MouseEvent) => {
+            if (outsideRef.current && !outsideRef.current.contains(e.target as Node)) {
                 setIsOpen(false);
             }
         };
@@ -28,7 +28,7 @@ export default function StrokeWidth() {
     }, [outsideRef]);
 
     const onClick = (el: number) => {
-        activeObject.set('strokeWidth', el);
+        activeObject?.set('strokeWidth', el);
         setCurrWidth(el);
     };
 

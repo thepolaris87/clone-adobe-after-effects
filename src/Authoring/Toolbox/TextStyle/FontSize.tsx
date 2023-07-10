@@ -1,14 +1,14 @@
 import { editorAtom } from '@/atoms/atom';
 import { activeObjectAtom } from '@/atoms/atom';
 import { useAtomValue } from 'jotai';
-import { useEffect, useState } from 'react';
+import { ChangeEvent, InputHTMLAttributes, useEffect, useState } from 'react';
 import { IoIosAdd, IoIosRemove } from 'react-icons/io';
 
 export default function FontSize() {
     const editor = useAtomValue(editorAtom);
     const canvas = editor?.canvas;
-    const activeObject: any = useAtomValue(activeObjectAtom);
-    const [size, setSize] = useState(activeObject.__dimensionAffectingProps.fontSize);
+    const activeObject: fabric.Object | null = useAtomValue(activeObjectAtom);
+    const [size, setSize] = useState((activeObject as any).__dimensionAffectingProps.fontSize);
 
     const increasedBtn = () => {
         setSize((prev: number) => Number(prev) + 1);
@@ -19,16 +19,16 @@ export default function FontSize() {
     };
 
     useEffect(() => {
-        activeObject.set('fontSize', size);
+        (activeObject as any).set('fontSize', size);
         canvas?.renderAll();
     }, [size]);
 
     useEffect(() => {
-        setSize(activeObject.__dimensionAffectingProps.fontSize);
+        setSize((activeObject as any).__dimensionAffectingProps.fontSize);
     }, [activeObject]);
 
-    const onChange = (e: any) => {
-        setSize(e.target.value);
+    const onChange = (e: ChangeEvent<HTMLInputElement>) => {
+        setSize(e?.target.value);
     };
 
     return (

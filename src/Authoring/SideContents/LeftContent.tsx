@@ -1,19 +1,21 @@
 import { editorAtom } from '@/atoms/atom';
 import { activeObjectAtom } from '@/atoms/atom';
-import { useAtomValue } from 'jotai';
+import { useAtom, useAtomValue } from 'jotai';
 import { useEffect, useState } from 'react';
 import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd';
+import { indexAtom } from '../Toolbox/atom';
 
 export default function LeftContent() {
     const editor = useAtomValue(editorAtom);
     const canvas = editor?.canvas;
-    const activeObject: any = useAtomValue(activeObjectAtom);
+    const activeObject: fabric.Object | null = useAtomValue(activeObjectAtom);
     const [activeSrc, setActiveSrc] = useState('');
     const objects = canvas?.getObjects();
     const [items, setItems] = useState<Object[]>(objects ? objects : []);
+    const [indexClick, setIndexClick] = useAtom(indexAtom);
 
     useEffect(() => {
-        const handleObjectAdded = (e: any) => {
+        const handleObjectAdded = (e: fabric.IEvent) => {
             const addedObject = e.target;
             if (addedObject) {
                 addedObject.hasControls = true;
@@ -22,32 +24,36 @@ export default function LeftContent() {
                 canvas?.renderAll();
             }
         };
-    
+
         if (canvas) {
             canvas.on('object:added', handleObjectAdded);
         }
-    
+
         return () => {
             if (canvas) {
                 canvas.off('object:added', handleObjectAdded);
             }
         };
     }, [canvas]);
-    
 
     useEffect(() => {
-        if (objects === items) return;
-        if (objects && objects.length > 0) {
-            const updatedItems = objects ? [...objects].reverse() : [];
-            // setItems(updatedItems);
+        if (indexClick) {
+            if (objects && objects.length > 0) {
+                const updatedItems = objects ? [...objects].reverse() : [];
+                setItems(updatedItems);
+                setIndexClick(false);
+            } else {
+                setItems([]);
+                setIndexClick(false);
+            }
         }
     }, [objects]);
 
     useEffect(() => {
-        if (Object.keys(activeObject).length === 0) {
+        if (!activeObject) {
             setActiveSrc('');
         } else {
-            setActiveSrc(activeObject.data?.type === 'image' ? activeObject.getSrc() : activeObject.toDataURL());
+            setActiveSrc((activeObject as fabric.Object).data?.type === 'image' ? (activeObject as any).getSrc() : (activeObject as any).toDataURL());
         }
     }, [activeObject]);
 
@@ -92,17 +98,15 @@ export default function LeftContent() {
             <Droppable droppableId="droppable">
                 {(provided) => (
                     <div className="p-3" ref={provided.innerRef} {...provided.droppableProps}>
-                        <div className="w-full border h-[100px]">
-                            {Object.keys(activeObject).length === 0 ? null : <img className="object-contain w-full h-full" src={activeSrc} />}
-                        </div>
-                        <div>
+                        <div className="w-full border h-[100px]">{!activeObject ? null : <img className="object-contain w-full h-full" src={activeSrc} />}</div>
+                        <div className="h-[350px] overflow-y-auto">
                             {[...items].map((el: any, i: number) => {
                                 return (
                                     <Draggable key={el.data.id} draggableId={el.data.id} index={i}>
                                         {(provided) => (
                                             <div
                                                 key={el.data.id}
-                                                className="flex bg-white w-full h-12 mt-2 rounded-md justify-between px-2"
+                                                className="flex bg-white w-full h-12 mt-2 rounded-md justify-center px-2"
                                                 ref={provided.innerRef}
                                                 {...provided.draggableProps}
                                                 {...provided.dragHandleProps}
@@ -118,7 +122,6 @@ export default function LeftContent() {
                                                               })
                                                     }
                                                 ></img>
-                                                <div className="truncate">{el.data.type}</div>
                                             </div>
                                         )}
                                     </Draggable>

@@ -33,14 +33,20 @@ export default function Style() {
             setActiveObject(active);
         };
 
+        const handleSelectionUpdated = (e: fabric.IEvent) => {
+            if (!e.selected) return;
+            setActiveObject(e.selected[0]);
+        };
+
         const handleSelectionCleared = () => {
-            setActiveObject({});
+            setActiveObject(null);
         };
 
         if (canvas) {
             canvas.on('object:added', handleObjectUpdate);
             canvas.on('object:modified', handleObjectModified);
             canvas.on('selection:created', handleSelectionCreated);
+            canvas.on('selection:updated', handleSelectionUpdated);
             canvas.on('selection:cleared', handleSelectionCleared);
         }
 
@@ -49,6 +55,7 @@ export default function Style() {
                 canvas.off('object:added', handleObjectUpdate);
                 canvas.off('object:modified', handleObjectModified);
                 canvas.off('selection:created', handleSelectionCreated);
+                canvas.off('selection:updated', handleSelectionUpdated);
                 canvas.off('selection:cleared', handleSelectionCleared);
             }
         };
@@ -56,7 +63,7 @@ export default function Style() {
 
     return (
         <>
-            {activeObject && (activeObject as any).type === 'textbox' ? (
+            {activeObject && (activeObject as fabric.Object).type === 'textbox' ? (
                 <>
                     <div className="w-0 h-7 mx-2 border self-center" />
                     <FontColor />

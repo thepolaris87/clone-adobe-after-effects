@@ -1,4 +1,4 @@
-import { editorAtom } from '@/atoms/atom';
+import { activeObjectAtom, editorAtom } from '@/atoms/atom';
 import { IconButtonV1 } from '@/components/Button';
 import { useAtomValue } from 'jotai';
 import { BiBold, BiItalic } from 'react-icons/bi';
@@ -6,7 +6,7 @@ import { BiBold, BiItalic } from 'react-icons/bi';
 export default function FontStyle() {
     const editor = useAtomValue(editorAtom);
     const canvas = editor?.canvas;
-    const activeObject: any = canvas?.getActiveObject();
+    const activeObject: any = useAtomValue(activeObjectAtom);
 
     const boldBtnClick = () => {
         if (activeObject.fontWeight === 'bold') {

@@ -1,4 +1,4 @@
-import { ChangeEventHandler } from "react";
+import { ChangeEventHandler } from 'react';
 
 type input = {
     title: string;
@@ -6,13 +6,20 @@ type input = {
     value: number | undefined;
     onChange?: ChangeEventHandler<HTMLInputElement>;
     readOnly?: boolean;
-}
-export default function Input({title, name, value, onChange, readOnly} : input) {
-    
+};
+export default function Input({ title, name, value, onChange, readOnly }: input) {
     return (
         <div className="flex flex-col">
-            <label>{title}</label>
-            <input type="number" className="w-16 text-right px-1" step="any" name={name} value={(value) ? Math.round(value * 100) / 100 : 0} onChange={onChange} readOnly={readOnly}></input>
+            <label className="text-[0.75rem] text-gray-500">{title}</label>
+            <input
+                type="number"
+                className="w-16 text-right px-1"
+                step="any"
+                name={name}
+                value={value ? Math.round(value * 100) / 100 : 0}
+                onChange={onChange}
+                readOnly={readOnly}
+            ></input>
         </div>
     );
 }
