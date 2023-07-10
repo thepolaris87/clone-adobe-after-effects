@@ -7,8 +7,9 @@ import { sound } from '@/util/util';
 import { MdPlayCircleOutline } from 'react-icons/md';
 import { wait, onSetTimeLine } from '@/util/util';
 import { useTimeCheck } from '@/hooks/useTimeCheck';
+import { soundComponent } from '@/util/soundComponent';
 
-export const Sound = ({ sounds, object, id, onDeleteEffect }: AnimationProps) => {
+export const Sound = ({ sounds, object, id, onDeleteEffect, isPlay, setEndTime, onSetPlay }: AnimationProps) => {
     const [open, setOpen] = useState(false);
     const [soundId, setSoundId] = useState<string>();
     const [_sound, setSound] = useState<ReturnType<typeof sound>>();
@@ -18,7 +19,7 @@ export const Sound = ({ sounds, object, id, onDeleteEffect }: AnimationProps) =>
     const [timeMaxValue, setTimeMaxValue] = useState(100);
     const divRef = useRef<HTMLDivElement | null>(null);
     const inputRef = useRef<HTMLInputElement | null>(null);
-    const soundIdRef = useRef<number>();
+    const soundIdRef = useRef<number>(0);
     const { start, stop, time } = useTimeCheck();
 
     const onClick = (soundId: string) => {
@@ -47,28 +48,37 @@ export const Sound = ({ sounds, object, id, onDeleteEffect }: AnimationProps) =>
         }
     };
     const onPlayAnimation = async () => {
+        if (!soundId) return;
         setIsPlaying(true);
+        onSetPlay(true);
         const { timeLine } = object.data.effects[id];
         await wait(timeLine[0] * 1000);
-
         if (!_sound) return;
         start();
-        _sound?.play();
-        soundIdRef.current = setInterval(() => {
-            _sound?.play();
-        }, _sound.audio.duration * 1000);
+        soundIdRef.current = soundComponent({ soundIdRef, _sound });
     };
     const onStopAnimation = useCallback(() => {
         setIsPlaying(false);
+        onSetPlay(false);
         clearInterval(soundIdRef.current);
         _sound?.stop();
         stop();
-    }, [_sound, stop]);
+    }, [_sound, stop, onSetPlay]);
+
+    useEffect(() => {
+        if (isPlay) setIsPlaying(true);
+        else setIsPlaying(false);
+    }, [isPlay]);
 
     useEffect(() => {
         const { timeLine } = object.data.effects[id];
         if (timeLine[1] <= time) onStopAnimation();
     }, [time, id, object, onStopAnimation]);
+
+    useEffect(() => {
+        if (isPlay) setIsPlaying(true);
+        else setIsPlaying(false);
+    }, [isPlay]);
 
     useEffect(() => {
         document.addEventListener('click', (e) => {
@@ -80,7 +90,8 @@ export const Sound = ({ sounds, object, id, onDeleteEffect }: AnimationProps) =>
 
     useEffect(() => {
         onSetTimeLine({ object, id, timeMinValue, timeMaxValue });
-    }, [timeMinValue, timeMaxValue, id, object]);
+        setEndTime();
+    }, [timeMinValue, timeMaxValue, id, object, setEndTime]);
 
     return (
         <div className="flex flex-wrap justify-between mb-2">
@@ -124,16 +135,19 @@ export const Sound = ({ sounds, object, id, onDeleteEffect }: AnimationProps) =>
                 objectId={object.data.id}
                 isPlaying={isPlaying}
             />
-            <span className="flex">
-                {!isPlaying ? (
-                    <MdPlayCircleOutline className="hidden sm:block cursor-pointer mr-1" onClick={() => onPlayAnimation()} />
-                ) : (
-                    <MdOutlineStopCircle className="hidden sm:block cursor-pointer mr-1" onClick={() => onStopAnimation()} />
+            <span className="flex w-[4%]">
+                {!isPlay &&
+                    (!isPlaying ? (
+                        <MdPlayCircleOutline className="hidden sm:block cursor-pointer mr-1" onClick={() => onPlayAnimation()} />
+                    ) : (
+                        <MdOutlineStopCircle className="cursor-pointer hidden sm:block mr-1" onClick={() => onStopAnimation()} />
+                    ))}
+                {!isPlay && (
+                    <BiTrash
+                        className={classNames(isPlaying ? 'cursor-not-allowed' : 'cursor-pointer', 'hidden sm:block')}
+                        onClick={() => !isPlaying && onDeleteEffect(id)}
+                    />
                 )}
-                <BiTrash
-                    className={classNames(isPlaying ? 'cursor-not-allowed' : 'cursor-pointer', 'hidden sm:block')}
-                    onClick={() => !isPlaying && onDeleteEffect(id)}
-                />
             </span>
         </div>
     );

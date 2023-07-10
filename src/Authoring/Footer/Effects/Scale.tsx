@@ -1,21 +1,25 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import classNames from 'classnames';
 import { BiBadge, BiTrash } from 'react-icons/bi';
 import { Slider } from '../components/Slider';
 import { MdPlayCircleOutline, MdOutlineStopCircle } from 'react-icons/md';
 import { editorAtom } from '@/atoms/atom';
 import { useAtomValue } from 'jotai';
-import { wait, onSetTimeLine, onPlayAnimation } from '@/util/util';
+import { onSetTimeLine } from '@/util/util';
+import { scale } from '@/util';
 
-export const Scale = ({ object, id, onDeleteEffect }: AnimationProps) => {
+export const Scale = ({ object, id, onDeleteEffect, isPlay, setEndTime, onSetPlay }: AnimationProps) => {
     const editor = useAtomValue(editorAtom);
     const [isPlaying, setIsPlaying] = useState(false);
     const [cancel, setCancel] = useState<any>();
-    const [scale, setScale] = useState({ scaleX: 0, scaleY: 0 });
+    const [scaleValue, setScaleValue] = useState({ scaleX: object.scaleX, scaleY: object.scaleY });
+    const [originValue, setOriginValue] = useState({ scaleX: 0, scaleY: 0 });
     const [timeMinValue, setTimeMinValue] = useState(0);
     const [timeMaxValue, setTimeMaxValue] = useState(100);
+    const timeRef = useRef(0);
 
     const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setScaleValue({ ...scaleValue, [e.target.name]: Number(e.target.value) });
         const effects = object.data.effects.map((effect: EffectProps, index: number) => {
             if (index === id) return { ...effect, option: { ...effect.option, [e.target.name]: e.target.value } };
             return effect;
@@ -27,32 +31,38 @@ export const Scale = ({ object, id, onDeleteEffect }: AnimationProps) => {
         setTimeMaxValue(timeMaxValue + 1);
         setTimeMinValue(timeMinValue - 1);
     };
-    const onClick = async () => {
+    const onPlayAnimation = async () => {
         setIsPlaying(true);
-        const { option: opt, timeLine } = object.data.effects[id];
-        const [startTime, endTime] = timeLine;
-        await wait(startTime * 1000);
-        const { scaleX, scaleY } = object;
-        setScale({ scaleX: scaleX || 0, scaleY: scaleY || 0 });
-        const option = { scaleX: opt.scaleX, scaleY: opt.scaleY };
-        const onComplete = () => {
-            object.set({ scaleX: scaleX, scaleY: scaleY });
-            setIsPlaying(false);
-        };
-        onPlayAnimation({ object, editor, setCancel, endTime, option, onComplete });
+        onSetPlay(true);
+        const effect = object.data.effects[id];
+        const [startTime, endTime] = effect.timeLine;
+        setOriginValue({ scaleX: object.scaleX || 0, scaleY: object.scaleY || 0 });
+        timeRef.current = setTimeout(() => {
+            const _cancel = scale({ effect, object, editor, endTime, setIsPlaying });
+            setCancel(() => {
+                return _cancel;
+            });
+        }, startTime * 1000);
     };
-
     const onStopAnimation = () => {
         setIsPlaying(false);
+        onSetPlay(false);
+        clearTimeout(timeRef.current);
         for (let i = 0; i <= 1; i++) {
-            cancel[i]?.();
+            cancel?.();
         }
-        object.set({ scaleX: scale.scaleX, scaleY: scale.scaleY });
+        object.set({ scaleX: originValue.scaleX, scaleY: originValue.scaleY });
     };
 
     useEffect(() => {
+        if (isPlay) setIsPlaying(true);
+        else setIsPlaying(false);
+    }, [isPlay]);
+
+    useEffect(() => {
         onSetTimeLine({ object, id, timeMinValue, timeMaxValue });
-    }, [timeMinValue, timeMaxValue, id, object]);
+        setEndTime();
+    }, [timeMinValue, timeMaxValue, id, object, setEndTime]);
 
     return (
         <div className="flex flex-wrap justify-between mb-2">
@@ -63,9 +73,14 @@ export const Scale = ({ object, id, onDeleteEffect }: AnimationProps) => {
                 </span>
                 <span className="hidden sm:flex">
                     <label className="mr-2">x</label>
-                    <input name="scaleX" className="rounded-sm px-2 w-[80%] shadow-[0_1px_#cdd8dd] mr-3" onChange={(e) => onChange(e)} />
+                    <input
+                        name="scaleX"
+                        className="rounded-sm px-2 w-[80%] shadow-[0_1px_#cdd8dd] mr-3"
+                        value={scaleValue.scaleX}
+                        onChange={(e) => onChange(e)}
+                    />
                     <label className="mr-2">y</label>
-                    <input name="scaleY" className="rounded-sm px-2 w-[80%] shadow-[0_1px_#cdd8dd]" onChange={(e) => onChange(e)} />
+                    <input name="scaleY" className="rounded-sm px-2 w-[80%] shadow-[0_1px_#cdd8dd]" value={scaleValue.scaleY} onChange={(e) => onChange(e)} />
                 </span>
             </div>
             <Slider
@@ -77,16 +92,19 @@ export const Scale = ({ object, id, onDeleteEffect }: AnimationProps) => {
                 objectId={object.data.id}
                 isPlaying={isPlaying}
             />
-            <span className="flex">
-                {!isPlaying ? (
-                    <MdPlayCircleOutline className="hidden sm:block cursor-pointer mr-1" onClick={() => onClick()} />
-                ) : (
-                    <MdOutlineStopCircle className="hidden sm:block cursor-pointer mr-1" onClick={() => onStopAnimation()} />
+            <span className="flex w-[4%]">
+                {!isPlay &&
+                    (!isPlaying ? (
+                        <MdPlayCircleOutline className="hidden sm:block cursor-pointer mr-1" onClick={() => onPlayAnimation()} />
+                    ) : (
+                        <MdOutlineStopCircle className="cursor-pointer hidden sm:block mr-1" onClick={() => onStopAnimation()} />
+                    ))}
+                {!isPlay && (
+                    <BiTrash
+                        className={classNames(isPlaying ? 'cursor-not-allowed' : 'cursor-pointer', 'hidden sm:block')}
+                        onClick={() => !isPlaying && onDeleteEffect(id)}
+                    />
                 )}
-                <BiTrash
-                    className={classNames(isPlaying ? 'cursor-not-allowed' : 'cursor-pointer', 'hidden sm:block')}
-                    onClick={() => !isPlaying && onDeleteEffect(id)}
-                />
             </span>
         </div>
     );

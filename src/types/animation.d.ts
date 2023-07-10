@@ -21,6 +21,18 @@ type AnimationProps = {
     object: fabric.Object;
     id: number;
     onDeleteEffect: (value: number) => void;
+    isPlay: boolean;
+    setEndTime: () => void;
+    onSetPlay: (value: boolean) => void;
+};
+
+type PlayEffectProps = {
+    effect?: EffectProps;
+    object: fabric.Object;
+    editor: Editor | null;
+    endTime: number;
+    setIsPlaying?: (value: boolean) => void;
+    onSetCancel?: any;
 };
 
 type SliderProps = {
@@ -36,7 +48,6 @@ type SliderProps = {
 type PlayAnimationProps = {
     object: fabric.Object;
     editor: Editor | null;
-    setCancel: any;
     endTime: number;
     option: { [key: string]: number | string };
     onComplete: () => void;

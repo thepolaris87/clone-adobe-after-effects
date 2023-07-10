@@ -17,7 +17,7 @@ export const Footer = () => {
                     <div className="font-[700] mb-2">Animation</div>
                     <div className="px-[10px]">
                         {objects.map((object, index) => {
-                            return <AnimationList key={index} object={object} sounds={sounds as TGetSound[]} />;
+                            return <AnimationList key={index} object={object} sounds={sounds} />;
                         })}
                     </div>
                 </div>
