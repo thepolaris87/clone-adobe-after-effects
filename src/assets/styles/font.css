@@ -3,3 +3,21 @@
     font-weight: 400;
     src: url('../fonts/NotoSansKR-Regular.otf') format('opentype');
 }
+
+@font-face {
+    font-family: 'NanumSquereRoundB';
+    font-weight: 400;
+    src: url('../fonts/NanumSquareRoundB.6a517e6dfedd82980040.woff') format('opentype');
+}
+
+@font-face {
+    font-family: 'NanumSquereRoundR';
+    font-weight: 400;
+    src: url('../fonts/NanumSquareRoundR.fc15c401e999de65d638.woff') format('opentype');
+}
+
+@font-face {
+    font-family: 'ONEMobilePOP';
+    font-weight: 400;
+    src: url('../fonts/ONEMobilePOP.16fb96cc197f43c663ca.woff') format('opentype');
+}

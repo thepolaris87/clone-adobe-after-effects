@@ -158,7 +158,7 @@ export default function RightContent() {
                 <div className="font-extrabold pt-3">Transform</div>
                 <div className="border-b pb-3 w-2/3 min-w-[140px]">
                     <div
-                        className="flex justify-between bg-gray-300 cursor-pointer p-1"
+                        className="flex justify-between bg-[#E7E6E6] cursor-pointer p-1"
                         onClick={() => setIsOpen((prev) => ({ ...prev, position: !isOpen.position }))}
                     >
                         <div>Position</div>
@@ -184,7 +184,10 @@ export default function RightContent() {
                     )}
                 </div>
                 <div className="border-b pb-3 w-2/3 min-w-[140px]">
-                    <div className="flex justify-between bg-gray-300 cursor-pointer p-1" onClick={() => setIsOpen((prev) => ({ ...prev, size: !isOpen.size }))}>
+                    <div
+                        className="flex justify-between bg-[#E7E6E6] cursor-pointer p-1"
+                        onClick={() => setIsOpen((prev) => ({ ...prev, size: !isOpen.size }))}
+                    >
                         <div>Size</div>
                         <div>
                             <BsChevronDown className="w-4" />
@@ -218,7 +221,7 @@ export default function RightContent() {
                 </div>
                 <div className="border-b pb-3 w-2/3 min-w-[140px]">
                     <div
-                        className="flex justify-between bg-gray-300 p-1 cursor-pointer"
+                        className="flex justify-between bg-[#E7E6E6] p-1 cursor-pointer"
                         onClick={() => setIsOpen((prev) => ({ ...prev, rotate: !isOpen.rotate }))}
                     >
                         <div>Rotate</div>
@@ -242,7 +245,7 @@ export default function RightContent() {
             <div>
                 <div className="font-extrabold pt-4">Attribute</div>
                 <div
-                    className="flex justify-between w-2/3 min-w-[140px] bg-gray-300 cursor-pointer p-1"
+                    className="flex justify-between w-2/3 min-w-[140px] bg-[#E7E6E6] cursor-pointer p-1"
                     onClick={() => setIsOpen((prev) => ({ ...prev, opacity: !isOpen.opacity }))}
                 >
                     <div className="">Opacity</div>
