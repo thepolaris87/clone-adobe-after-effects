@@ -49,9 +49,7 @@ export const Move = ({ data }: AnimationProps) => {
         setIsPlaying(false);
         onSetPlay(false);
         clearTimeout(timeRef.current);
-        for (let i = 0; i <= 1; i++) {
-            cancel?.();
-        }
+        cancel?.();
         object.set({ top: originValue.top, left: originValue.left });
     };
 
