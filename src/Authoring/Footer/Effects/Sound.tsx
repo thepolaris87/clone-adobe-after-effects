@@ -6,7 +6,6 @@ import { Slider } from '../components/Slider';
 import { sound } from '@/util/util';
 import { MdPlayCircleOutline } from 'react-icons/md';
 import { wait, onSetTimeLine } from '@/util/util';
-import { useTimeCheck } from '@/hooks/useTimeCheck';
 import { soundComponent } from '@/util/soundComponent';
 
 export const Sound = ({ sounds, object, id, onDeleteEffect, isPlay, setEndTime, onSetPlay }: AnimationProps) => {
@@ -20,7 +19,6 @@ export const Sound = ({ sounds, object, id, onDeleteEffect, isPlay, setEndTime, 
     const divRef = useRef<HTMLDivElement | null>(null);
     const inputRef = useRef<HTMLInputElement | null>(null);
     const soundIdRef = useRef<number>(0);
-    const { start, stop, time } = useTimeCheck();
 
     const onClick = (soundId: string) => {
         setSoundId(soundId);
@@ -54,26 +52,20 @@ export const Sound = ({ sounds, object, id, onDeleteEffect, isPlay, setEndTime, 
         const { timeLine } = object.data.effects[id];
         await wait(timeLine[0] * 1000);
         if (!_sound) return;
-        start();
-        soundIdRef.current = soundComponent({ soundIdRef, _sound });
+        const endTime = timeLine[1];
+        soundIdRef.current = soundComponent({ soundIdRef, _sound, endTime, onStopAnimation });
     };
     const onStopAnimation = useCallback(() => {
         setIsPlaying(false);
         onSetPlay(false);
         clearInterval(soundIdRef.current);
         _sound?.stop();
-        stop();
-    }, [_sound, stop, onSetPlay]);
+    }, [_sound, onSetPlay]);
 
     useEffect(() => {
         if (isPlay) setIsPlaying(true);
         else setIsPlaying(false);
     }, [isPlay]);
-
-    useEffect(() => {
-        const { timeLine } = object.data.effects[id];
-        if (timeLine[1] <= time) onStopAnimation();
-    }, [time, id, object, onStopAnimation]);
 
     useEffect(() => {
         if (isPlay) setIsPlaying(true);

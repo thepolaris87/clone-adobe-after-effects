@@ -58,6 +58,7 @@ export const AnimationList = ({ object, sounds }: { object: fabric.Object; sound
             const [startTime, endTime] = effect.timeLine;
             const flag = timeLineRef.current.index === idx;
             let _cancel: any;
+            console.log(endTime);
             timeRef.current = setTimeout(() => {
                 if (effect.type === 'FADEIN') _cancel = fadeIn({ effect, object, editor, endTime, ...(flag && { setIsPlaying: setIsPlaying }) });
                 if (effect.type === 'FADEOUT') _cancel = fadeOut({ effect, object, editor, endTime, ...(flag && { setIsPlaying: setIsPlaying }) });
@@ -66,10 +67,11 @@ export const AnimationList = ({ object, sounds }: { object: fabric.Object; sound
                 if (effect.type === 'ROTATE') _cancel = rotate({ effect, object, editor, endTime, ...(flag && { setIsPlaying: setIsPlaying }) });
                 if (effect.type === 'OPACITY') opacity({ effect, object, editor, endTime, onSetCancel, ...(flag && { setIsPlaying: setIsPlaying }) });
                 if (effect.type === 'SOUND') {
+                    if (!effect?.option?.src) return;
                     const audio = sound(`https://sol-api.esls.io/sounds/D1/${effect?.option?.src}.mp3`);
                     setSound(audio);
                     if (!audio) return;
-                    soundIdRef.current = soundComponent({ soundIdRef, _sound: audio });
+                    soundIdRef.current = soundComponent({ soundIdRef, _sound: audio, endTime, ...(flag && { setIsPlaying: setIsPlaying }) });
                 }
                 setCancel((prev: any) => {
                     return [...prev, _cancel];
