@@ -97,11 +97,11 @@ export default function LeftContent() {
 
     return (
         <DragDropContext onDragEnd={onDragEnd}>
-            <Droppable droppableId="droppable">
-                {(provided) => (
-                    <div className="p-3" ref={provided.innerRef} {...provided.droppableProps}>
-                        <div className="w-full border h-[100px]">{!activeObject ? null : <img className="object-contain w-full h-full" src={activeSrc} />}</div>
-                        <div className="h-[350px] overflow-y-auto">
+            <div className="p-3">
+                <div className="w-full border h-[100px]">{!activeObject ? null : <img className="object-contain w-full h-full" src={activeSrc} />}</div>
+                <Droppable droppableId="droppable">
+                    {(provided) => (
+                        <div className="h-[350px] overflow-y-auto" ref={provided.innerRef} {...provided.droppableProps}>
                             {[...items].map((el: any, i: number) => {
                                 return (
                                     <Draggable key={el.data.id} draggableId={el.data.id} index={i}>
@@ -134,9 +134,9 @@ export default function LeftContent() {
                                 );
                             })}
                         </div>
-                    </div>
-                )}
-            </Droppable>
+                    )}
+                </Droppable>
+            </div>
         </DragDropContext>
     );
 }
