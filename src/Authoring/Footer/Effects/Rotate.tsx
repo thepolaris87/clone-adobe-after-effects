@@ -1,21 +1,25 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import classNames from 'classnames';
 import { BiBadge, BiTrash } from 'react-icons/bi';
 import { Slider } from '../components/Slider';
 import { MdPlayCircleOutline, MdOutlineStopCircle } from 'react-icons/md';
 import { editorAtom } from '@/atoms/atom';
 import { useAtomValue } from 'jotai';
-import { wait, onSetTimeLine, onPlayAnimation } from '@/util/util';
+import { onSetTimeLine } from '@/util/util';
+import { rotate } from '@/util';
 
-export const Rotate = ({ object, id, onDeleteEffect }: AnimationProps) => {
+export const Rotate = ({ object, id, onDeleteEffect, isPlay, setEndTime, onSetPlay }: AnimationProps) => {
     const editor = useAtomValue(editorAtom);
     const [cancel, setCancel] = useState<any>();
     const [isPlaying, setIsPlaying] = useState(false);
-    const [angle, setAngle] = useState(0);
+    const [angle, setAngle] = useState(object.angle);
+    const [originValue, setOriginValue] = useState(0);
     const [timeMinValue, setTimeMinValue] = useState(0);
     const [timeMaxValue, setTimeMaxValue] = useState(100);
+    const timeRef = useRef(0);
 
     const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setAngle(Number(e.target.value));
         const effects = object.data.effects.map((effect: EffectProps, index: number) => {
             if (index === id) return { ...effect, option: { ...effect.option, [e.target.name]: e.target.value } };
             return effect;
@@ -27,27 +31,36 @@ export const Rotate = ({ object, id, onDeleteEffect }: AnimationProps) => {
         setTimeMaxValue(timeMaxValue + 1);
         setTimeMinValue(timeMinValue - 1);
     };
-    const onClick = async () => {
+    const onPlayAnimation = async () => {
         setIsPlaying(true);
-        const { option: opt, timeLine } = object.data.effects[id];
-        const [startTime, endTime] = timeLine;
-        await wait(startTime * 1000);
-        setAngle(object.angle as number);
-        const option = { angle: opt.angle };
-        const onComplete = () => {
-            object.set('angle', 0);
-            setIsPlaying(false);
-        };
-        onPlayAnimation({ object, editor, setCancel, endTime, option, onComplete });
+        onSetPlay(true);
+        const effect = object.data.effects[id];
+        const [startTime, endTime] = effect.timeLine;
+        setOriginValue(object.angle as number);
+        timeRef.current = setTimeout(() => {
+            const _cancel = rotate({ effect, object, editor, endTime, setIsPlaying });
+            setCancel(() => {
+                return _cancel;
+            });
+        }, startTime * 1000);
     };
     const onStopAnimation = () => {
         setIsPlaying(false);
-        cancel[0]?.();
-        object.set('angle', angle);
+        onSetPlay(false);
+        clearTimeout(timeRef.current);
+        cancel?.();
+        object.set('angle', originValue);
     };
+
+    useEffect(() => {
+        if (isPlay) setIsPlaying(true);
+        else setIsPlaying(false);
+    }, [isPlay]);
+
     useEffect(() => {
         onSetTimeLine({ object, id, timeMinValue, timeMaxValue });
-    }, [timeMinValue, timeMaxValue, id, object]);
+        setEndTime();
+    }, [timeMinValue, timeMaxValue, id, object, setEndTime]);
 
     return (
         <div className="flex flex-wrap justify-between mb-2">
@@ -58,7 +71,7 @@ export const Rotate = ({ object, id, onDeleteEffect }: AnimationProps) => {
                 </span>
                 <span className="hidden sm:flex justify-end">
                     <label className="mr-2">Angle</label>
-                    <input name="angle" className="rounded-sm px-2 w-[80%] shadow-[0_1px_#cdd8dd]" onChange={(e) => onChange(e)} />
+                    <input name="angle" className="rounded-sm px-2 w-[80%] shadow-[0_1px_#cdd8dd]" value={angle} onChange={(e) => onChange(e)} />
                 </span>
             </div>
             <Slider
@@ -70,16 +83,19 @@ export const Rotate = ({ object, id, onDeleteEffect }: AnimationProps) => {
                 objectId={object.data.id}
                 isPlaying={isPlaying}
             />
-            <span className="flex">
-                {!isPlaying ? (
-                    <MdPlayCircleOutline className="hidden sm:block cursor-pointer mr-1" onClick={() => onClick()} />
-                ) : (
-                    <MdOutlineStopCircle className="hidden sm:block cursor-pointer mr-1" onClick={() => onStopAnimation()} />
+            <span className="flex w-[4%]">
+                {!isPlay &&
+                    (!isPlaying ? (
+                        <MdPlayCircleOutline className="hidden sm:block cursor-pointer mr-1" onClick={() => onPlayAnimation()} />
+                    ) : (
+                        <MdOutlineStopCircle className="cursor-pointer hidden sm:block mr-1" onClick={() => onStopAnimation()} />
+                    ))}
+                {!isPlay && (
+                    <BiTrash
+                        className={classNames(isPlaying ? 'cursor-not-allowed' : 'cursor-pointer', 'hidden sm:block')}
+                        onClick={() => !isPlaying && onDeleteEffect(id)}
+                    />
                 )}
-                <BiTrash
-                    className={classNames(isPlaying ? 'cursor-not-allowed' : 'cursor-pointer', 'hidden sm:block')}
-                    onClick={() => !isPlaying && onDeleteEffect(id)}
-                />
             </span>
         </div>
     );
