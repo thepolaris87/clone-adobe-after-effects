@@ -13,26 +13,33 @@ export default function LeftContent() {
     const [items, setItems] = useState<Object[]>(objects ? objects : []);
 
     useEffect(() => {
-        canvas?.on('object:added', function (e) {
+        const handleObjectAdded = (e: any) => {
             const addedObject = e.target;
             if (addedObject) {
                 addedObject.hasControls = true;
                 addedObject.hasBorders = true;
-
                 setItems((prev) => [addedObject, ...prev]);
-
-                canvas.renderAll();
+                canvas?.renderAll();
             }
-        });
+        };
+    
+        if (canvas) {
+            canvas.on('object:added', handleObjectAdded);
+        }
+    
         return () => {
-            canvas?.off();
+            if (canvas) {
+                canvas.off('object:added', handleObjectAdded);
+            }
         };
     }, [canvas]);
+    
 
     useEffect(() => {
         if (objects === items) return;
         if (objects && objects.length > 0) {
-            // setItems([...objects].reverse());
+            const updatedItems = objects ? [...objects].reverse() : [];
+            // setItems(updatedItems);
         }
     }, [objects]);
 
