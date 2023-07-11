@@ -9,7 +9,7 @@ import { onSetTimeLine } from '@/util/util';
 import { scale } from '@/util';
 
 export const Scale = ({ data }: AnimationProps) => {
-    const { object, id, onDeleteEffect, isPlay, setEndTime, onSetPlay } = data;
+    const { object, id, onDeleteEffect, isPlay, setEndTime, onSetPlay, onCreateTimeLine } = data;
     const editor = useAtomValue(editorAtom);
     const [isPlaying, setIsPlaying] = useState(false);
     const [cancel, setCancel] = useState<any>();
@@ -26,8 +26,10 @@ export const Scale = ({ data }: AnimationProps) => {
             return effect;
         });
         object.set('data', { ...object.get('data'), effects });
+        onCreateTimeLine();
     };
     const onCheckRange = () => {
+        setEndTime();
         if (timeMaxValue - timeMinValue > 1) return;
         setTimeMaxValue(timeMaxValue + 1);
         setTimeMinValue(timeMinValue - 1);
@@ -59,9 +61,13 @@ export const Scale = ({ data }: AnimationProps) => {
     }, [isPlay]);
 
     useEffect(() => {
+        if (isPlaying) onSetPlay(true);
+        else onSetPlay(false);
+    }, [isPlaying, onSetPlay]);
+
+    useEffect(() => {
         onSetTimeLine({ object, id, timeMinValue, timeMaxValue });
-        setEndTime();
-    }, [timeMinValue, timeMaxValue, id, object, setEndTime]);
+    }, [timeMinValue, timeMaxValue, id, object]);
 
     return (
         <div className="flex flex-wrap justify-between mb-2">

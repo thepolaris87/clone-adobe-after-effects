@@ -25,7 +25,29 @@ type AnimationProps = {
         isPlay: boolean;
         setEndTime: () => void;
         onSetPlay: (value: boolean) => void;
+        onCreateTimeLine: () => void;
     };
+};
+
+type TimeLineDataProps = {
+    key: string;
+    t1: number;
+    t2: number;
+    from?: number;
+    to?: number;
+    play?: () => void;
+    stop?: () => void;
+    isPlayed?: boolean;
+};
+
+type TimeLineBarProps = {
+    e: React.ChangeEvent<HTMLInputElement>;
+    setValue: (value: number) => void;
+    timeLineData: TimeLineDataProps[];
+    object: fabric.Object;
+    editor: Editor | null;
+    isPlay: boolean;
+    isPlaying: boolean;
 };
 
 type PlayEffectProps = {

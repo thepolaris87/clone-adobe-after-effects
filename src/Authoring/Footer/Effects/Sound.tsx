@@ -9,7 +9,7 @@ import { wait, onSetTimeLine } from '@/util/util';
 import { soundCheck } from '@/util/soundCheck';
 
 export const Sound = ({ data }: AnimationProps) => {
-    const { sounds, object, id, onDeleteEffect, isPlay, setEndTime, onSetPlay } = data;
+    const { sounds, object, id, onDeleteEffect, isPlay, setEndTime, onSetPlay, onCreateTimeLine } = data;
     const [open, setOpen] = useState(false);
     const [soundId, setSoundId] = useState<string>();
     const [_sound, setSound] = useState<ReturnType<typeof sound>>();
@@ -30,8 +30,10 @@ export const Sound = ({ data }: AnimationProps) => {
             return effect;
         });
         object.set('data', { ...object.get('data'), effects });
+        onCreateTimeLine();
     };
     const onCheckRange = () => {
+        setEndTime();
         if (timeMaxValue - timeMinValue > 1) return;
         setTimeMaxValue(timeMaxValue + 1);
         setTimeMinValue(timeMinValue - 1);
@@ -69,9 +71,9 @@ export const Sound = ({ data }: AnimationProps) => {
     }, [isPlay]);
 
     useEffect(() => {
-        if (isPlay) setIsPlaying(true);
-        else setIsPlaying(false);
-    }, [isPlay]);
+        if (isPlaying) onSetPlay(true);
+        else onSetPlay(false);
+    }, [isPlaying, onSetPlay]);
 
     useEffect(() => {
         document.addEventListener('click', (e) => {
@@ -83,8 +85,7 @@ export const Sound = ({ data }: AnimationProps) => {
 
     useEffect(() => {
         onSetTimeLine({ object, id, timeMinValue, timeMaxValue });
-        setEndTime();
-    }, [timeMinValue, timeMaxValue, id, object, setEndTime]);
+    }, [timeMinValue, timeMaxValue, id, object]);
 
     return (
         <div className="flex flex-wrap justify-between mb-2">
