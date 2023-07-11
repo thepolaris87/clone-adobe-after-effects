@@ -5,8 +5,8 @@ import { useEffect, useState } from 'react';
 import { CgEditFlipH, CgEditFlipV } from 'react-icons/cg';
 import { BsChevronDown } from 'react-icons/bs';
 type position = {
-    centerX: number | undefined;
-    centerY: number | undefined;
+    left: number | undefined;
+    top: number | undefined;
 };
 type size = {
     width: number | undefined;
@@ -24,7 +24,7 @@ export default function RightContent() {
     const editor = useAtomValue(editorAtom);
     const canvas = editor?.canvas;
     const [_activeObject, setActiveObject] = useAtom(activeObjectAtom);
-    const [position, setPosition] = useState<position>({ centerX: undefined, centerY: undefined });
+    const [position, setPosition] = useState<position>({ left: undefined, top: undefined });
     const [size, setSize] = useState<size>({ width: undefined, height: undefined });
     const [scaleValue, setScaleValue] = useState<scale>({ scaleX: undefined, scaleY: undefined });
     const [setting, setSetting] = useState<setting>({ angle: undefined, opacity: undefined });
@@ -35,7 +35,7 @@ export default function RightContent() {
     //초기화
     useEffect(() => {
         if (!activeObject) return;
-        setPosition({ centerX: activeObject.left, centerY: activeObject.top });
+        setPosition({ left: activeObject.left, top: activeObject.top });
         setSize({ width: activeObject.width, height: activeObject.height });
         setScaleValue({ scaleX: activeObject.scaleX, scaleY: activeObject.scaleY });
         setSetting({ angle: activeObject.angle, opacity: activeObject.opacity });
@@ -47,7 +47,7 @@ export default function RightContent() {
             setSize({ width: e.target?.width, height: e.target?.height });
         };
         const handleObjectMoving = (e: fabric.IEvent) => {
-            setPosition({ centerX: e.target?.left, centerY: e.target?.top });
+            setPosition({ left: e.target?.left, top: e.target?.top });
         };
         const handleObjectScaling = (e: fabric.IEvent) => {
             setScaleValue({ scaleX: e.target?.scaleX, scaleY: e.target?.scaleY });
@@ -59,14 +59,14 @@ export default function RightContent() {
 
         const handleSelectionUpdated = (e: fabric.IEvent) => {
             if (!e.selected) return;
-            setPosition({ centerX: e.selected[0].left, centerY: e.selected[0].top });
+            setPosition({ left: e.selected[0].left, top: e.selected[0].top });
             setSize({ width: e.selected[0].width, height: e.selected[0].height });
             setScaleValue({ scaleX: e.selected[0].scaleX, scaleY: e.selected[0].scaleY });
             setSetting({ angle: e.selected[0].angle, opacity: e.selected[0].opacity });
         };
 
         const handleSelectionCleared = () => {
-            setPosition({ centerX: undefined, centerY: undefined });
+            setPosition({ left: undefined, top: undefined });
             setSize({ width: undefined, height: undefined });
             setScaleValue({ scaleX: undefined, scaleY: undefined });
             setSetting({ angle: undefined, opacity: undefined });
@@ -95,11 +95,11 @@ export default function RightContent() {
 
     //Position
     const inputCenter = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.name === 'centerX') {
-            setPosition((prev) => ({ ...prev, centerX: Number(e.target.value) }));
+        if (e.target.name === 'left') {
+            setPosition((prev) => ({ ...prev, left: Number(e.target.value) }));
             activeObject.set({ left: Number(e.target.value) });
-        } else if (e.target.name === 'centerY') {
-            setPosition((prev) => ({ ...prev, centerY: Number(e.target.value) }));
+        } else if (e.target.name === 'top') {
+            setPosition((prev) => ({ ...prev, top: Number(e.target.value) }));
             activeObject.set({ top: Number(e.target.value) });
         }
         canvas?.renderAll();
@@ -165,18 +165,8 @@ export default function RightContent() {
                     </div>
                     {isOpen.position && (
                         <div className="flex gap-3">
-                            <Input
-                                title="Center-X"
-                                name="centerX"
-                                value={position.centerX}
-                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => inputCenter(e)}
-                            />
-                            <Input
-                                title="Center-Y"
-                                name="centerY"
-                                value={position.centerY}
-                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => inputCenter(e)}
-                            />
+                            <Input title="Left" name="left" value={position.left} onChange={(e: React.ChangeEvent<HTMLInputElement>) => inputCenter(e)} />
+                            <Input title="Top" name="top" value={position.top} onChange={(e: React.ChangeEvent<HTMLInputElement>) => inputCenter(e)} />
                         </div>
                     )}
                 </div>

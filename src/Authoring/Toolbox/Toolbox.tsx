@@ -1,3 +1,4 @@
+import Group from './Group';
 import IndexItems from './IndexItems';
 import InsertImage from './InsertImage';
 import InsertText from './InsertText';
@@ -12,6 +13,7 @@ export default function Toolbox() {
             <InsertText />
             <InsertImage />
             <IndexItems />
+            <Group />
             <RemoveObject />
             <Style />
         </div>
