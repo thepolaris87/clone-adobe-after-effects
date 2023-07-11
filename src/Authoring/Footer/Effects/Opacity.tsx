@@ -21,7 +21,7 @@ export const Opacity = ({ data }: AnimationProps) => {
     const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setInterval(Number(e.target.value));
         const effects = object.data.effects.map((effect: EffectProps, index: number) => {
-            if (index === id) return { ...effect, option: { ...effect.option, interval: e.target.value } };
+            if (index === id) return { ...effect, option: { ...effect.option, interval: Number(e.target.value) } };
             return effect;
         });
         object.set('data', { ...object.get('data'), effects });

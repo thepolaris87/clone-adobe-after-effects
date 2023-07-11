@@ -23,6 +23,7 @@ export const AnimationList = ({ object, sounds }: { object: fabric.Object; sound
     const [_sound, setSound] = useState<ReturnType<typeof sound>>();
     const timesRef = useRef<number[]>([]);
     const [cancel, setCancel] = useState<any>([]);
+    const [opacityCancel, setOpacityCancel] = useState<any>([]);
     const [timeLineData, setTimelineData] = useState<TimeLineDataProps[]>([]);
     const inputRef = useRef<HTMLInputElement | null>(null);
     const timeLineRef = useRef({ time: 0, index: 0 });
@@ -48,9 +49,9 @@ export const AnimationList = ({ object, sounds }: { object: fabric.Object; sound
         setEndTime();
         onCreateTimeLine();
     };
-    const onSetCancel = (_cancel: () => void) => {
-        setCancel((prev: any) => {
-            return [...prev, _cancel];
+    const onSetCancel = (_cancel: () => void, endTime: number, object: fabric.Object) => {
+        setOpacityCancel((prev: any) => {
+            return [...prev, [_cancel, endTime, object]];
         });
     };
     const onPlay = () => {
@@ -70,7 +71,7 @@ export const AnimationList = ({ object, sounds }: { object: fabric.Object; sound
                 if (effect.type === 'MOVE') _cancel = move({ effect, object, editor, endTime: duration, ...(flag && { setIsPlaying: setIsPlaying }) });
                 if (effect.type === 'SCALE') _cancel = scale({ effect, object, editor, endTime: duration, ...(flag && { setIsPlaying: setIsPlaying }) });
                 if (effect.type === 'ROTATE') _cancel = rotate({ effect, object, editor, endTime: duration, ...(flag && { setIsPlaying: setIsPlaying }) });
-                if (effect.type === 'OPACITY') opacity({ effect, object, editor, endTime: duration, onSetCancel, ...(flag && { setIsPlaying: setIsPlaying }) });
+                if (effect.type === 'OPACITY') opacity({ effect, object, editor, endTime, onSetCancel, ...(flag && { setIsPlaying: setIsPlaying }) });
                 if (effect.type === 'SOUND') {
                     if (!effect?.option?.src && obj.effects.length - 1 === idx) {
                         setIsPlaying(false);
@@ -95,12 +96,16 @@ export const AnimationList = ({ object, sounds }: { object: fabric.Object; sound
         timesRef.current.forEach((time) => {
             clearTimeout(time);
         }); // 아직 실행되지 않은 애니메이션 취소
-        cancel.forEach((_cancel: () => void) => {
+        cancel.forEach((_cancel: any) => {
             _cancel?.();
         }); // 실행 중인 애니메이션 취소
+        opacityCancel.forEach((_cancel: any) => {
+            _cancel[0]?.();
+        }); // opacity 따로 관리
         clearTimeout(soundIdRef.current);
         _sound?.stop();
         stop();
+        setValue(0);
         object.set('opacity', 1);
     };
     const onSetPlay = (flag: boolean) => {
@@ -130,9 +135,15 @@ export const AnimationList = ({ object, sounds }: { object: fabric.Object; sound
         if (time === timeLineRef.current.time + 1) {
             setValue(0);
             stop();
+            setIsPlaying(false);
         }
-        console.log(time);
-    }, [time, isPlaying, stop]);
+        opacityCancel.forEach((cancel: any) => {
+            if (cancel[1] === time * 1000) {
+                cancel[0]?.();
+                object.set('opacity', 1);
+            }
+        });
+    }, [time, isPlaying, stop, opacityCancel, object]);
 
     return (
         <div

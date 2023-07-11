@@ -1,32 +1,29 @@
 import { onPlayAnimation } from './util';
 
-export const opacity = async ({ effect, object, editor, endTime, setIsPlaying, onSetCancel }: PlayEffectProps) => {
+export const opacity = async ({ effect, object, editor, endTime, onSetCancel }: PlayEffectProps) => {
     const { option: opt } = effect as EffectProps;
-    if (!opt?.interval) return;
     object.set('opacity', 0);
+    const interval = opt?.interval || 1;
 
-    for (let index = 0; index < Math.floor(endTime / Number(opt.interval)); index++) {
-        const duration = opt?.interval * 1000;
+    for (let index = 0; index < Math.ceil(endTime / (interval * 2)); index++) {
+        const duration = interval * 1000;
         await new Promise<void>((resolve) => {
             const option = { opacity: 1 };
             const onComplete = () => {
                 resolve();
             };
             const cancel: any = onPlayAnimation({ object, editor, endTime, option, onComplete, duration });
-            onSetCancel(cancel[0]);
+            onSetCancel(cancel[0], endTime * 1000, object);
         });
 
         await new Promise<void>((resolve) => {
             const option = { opacity: 0 };
             const onComplete = () => {
                 resolve();
-                if (opt?.interval && index === Math.floor(endTime / opt?.interval) - 1) {
-                    object.set('opacity', 1);
-                    if (setIsPlaying) setIsPlaying(false);
-                }
+                // object.set('opacity', 1);
             };
             const cancel: any = onPlayAnimation({ object, editor, endTime, option, onComplete, duration });
-            onSetCancel(cancel[0]);
+            onSetCancel(cancel[0], endTime * 1000, object);
         });
     }
 };
