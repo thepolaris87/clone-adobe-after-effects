@@ -54,7 +54,14 @@ export default function LeftContent() {
         if (!activeObject) {
             setActiveSrc('');
         } else {
-            setActiveSrc((activeObject as fabric.Object).data?.type === 'image' ? (activeObject as any).getSrc() : (activeObject as any).toDataURL());
+            activeObject.data &&
+                setActiveSrc((activeObject as fabric.Object).data.type === 'image' ? (activeObject as any).getSrc() : (activeObject as any).toDataURL());
+            (activeObject as any)._objects &&
+                setActiveSrc(
+                    (activeObject as any)._objects[0].data.type === 'image'
+                        ? (activeObject as any)._objects[0].getSrc()
+                        : (activeObject as any)._objects[0].toDataURL()
+                );
         }
     }, [activeObject]);
 
@@ -101,18 +108,18 @@ export default function LeftContent() {
                 <div className="w-full border h-[100px]">{!activeObject ? null : <img className="object-contain w-full h-full" src={activeSrc} />}</div>
                 <Droppable droppableId="droppable">
                     {(provided) => (
-                        <div className="h-[350px] overflow-y-auto" ref={provided.innerRef} {...provided.droppableProps}>
+                        <div className="h-[350px] overflow-y-auto py-5" ref={provided.innerRef} {...provided.droppableProps}>
                             {[...items].map((el: any, i: number) => {
                                 return (
                                     <Draggable key={el.data.id} draggableId={el.data.id} index={i}>
                                         {(provided) => (
                                             <div
                                                 key={el.data.id}
-                                                className={
-                                                    el === activeObject
-                                                        ? `flex bg-white w-full h-12 mt-2 rounded-md justify-center px-2 border-blue-300 border-4`
-                                                        : `flex bg-white w-full h-12 mt-2 rounded-md justify-center px-2`
-                                                }
+                                                className={`flex bg-white w-full h-12 mt-2 rounded-md justify-center px-2 ${
+                                                    el === activeObject || (activeObject as any)?._objects?.some((i: fabric.Object) => i === el)
+                                                        ? 'border-blue-300 border-4'
+                                                        : ''
+                                                }`}
                                                 ref={provided.innerRef}
                                                 {...provided.draggableProps}
                                                 {...provided.dragHandleProps}

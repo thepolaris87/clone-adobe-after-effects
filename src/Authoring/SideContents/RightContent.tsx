@@ -95,15 +95,12 @@ export default function RightContent() {
 
     //Position
     const inputCenter = (e: React.ChangeEvent<HTMLInputElement>) => {
-        activeObject.set({ left: Number(e.target.value), top: activeObject.top });
-        canvas?.renderAll();
-
         if (e.target.name === 'centerX') {
             setPosition((prev) => ({ ...prev, centerX: Number(e.target.value) }));
-            activeObject.set({ left: Number(e.target.value), top: activeObject.top });
+            activeObject.set({ left: Number(e.target.value) });
         } else if (e.target.name === 'centerY') {
             setPosition((prev) => ({ ...prev, centerY: Number(e.target.value) }));
-            activeObject.set({ left: activeObject.left, top: Number(e.target.value) });
+            activeObject.set({ top: Number(e.target.value) });
         }
         canvas?.renderAll();
     };
