@@ -60,7 +60,7 @@ export default function LeftContent() {
                 setActiveSrc(
                     (activeObject as any)._objects[0].data.type === 'image'
                         ? (activeObject as any)._objects[0].getSrc()
-                        : (activeObject as any)._objcts[0].toDataURL()
+                        : (activeObject as any)._objects[0].toDataURL()
                 );
         }
     }, [activeObject]);
