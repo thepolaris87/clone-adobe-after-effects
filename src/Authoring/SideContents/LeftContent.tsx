@@ -54,14 +54,16 @@ export default function LeftContent() {
         if (!activeObject) {
             setActiveSrc('');
         } else {
-            activeObject.data &&
+            if (activeObject.data) {
                 setActiveSrc((activeObject as fabric.Object).data.type === 'image' ? (activeObject as any).getSrc() : (activeObject as any).toDataURL());
-            (activeObject as any)._objects &&
-                setActiveSrc(
-                    (activeObject as any)._objects[0].data.type === 'image'
-                        ? (activeObject as any)._objects[0].getSrc()
-                        : (activeObject as any)._objects[0].toDataURL()
-                );
+            } else {
+                (activeObject as any)._objects &&
+                    setActiveSrc(
+                        (activeObject as any)._objects[0].data.type === 'image'
+                            ? (activeObject as any)._objects[0].getSrc()
+                            : (activeObject as any)._objects[0].toDataURL()
+                    );
+            }
         }
     }, [activeObject]);
 
