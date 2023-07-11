@@ -23,11 +23,11 @@ export const AnimationList = ({ object, sounds }: { object: fabric.Object; sound
     const [_sound, setSound] = useState<ReturnType<typeof sound>>();
     const timesRef = useRef<number[]>([]);
     const [cancel, setCancel] = useState<any>([]);
+    const [timeLineData, setTimelineData] = useState<TimeLineDataProps[]>([]);
     const inputRef = useRef<HTMLInputElement | null>(null);
     const timeLineRef = useRef({ time: 0, index: 0 });
     const timeRef = useRef(0);
     const soundIdRef = useRef(0);
-    const [timeLineData, setTimelineData] = useState<TimeLineDataProps[]>([]);
     const { start, stop, time } = useTimeCheck();
 
     const onAddEffect = (title: TEffect) => {
@@ -73,6 +73,7 @@ export const AnimationList = ({ object, sounds }: { object: fabric.Object; sound
                 if (effect.type === 'SOUND') {
                     if (!effect?.option?.src && obj.effects.length - 1 === idx) {
                         setIsPlaying(false);
+                        stop();
                         return;
                     }
                     const audio = sound(`https://sol-api.esls.io/sounds/D1/${effect?.option?.src}.mp3`);
@@ -111,7 +112,7 @@ export const AnimationList = ({ object, sounds }: { object: fabric.Object; sound
         timeLineRef.current = { time: 0, index: 0 };
         object.data.effects.map((effect: EffectProps, idx: number) => {
             const { timeLine } = effect;
-            if (timeLine[1] > timeLineRef.current.time) timeLineRef.current = { time: timeLine[1], index: idx };
+            if (timeLine[1] > timeLineRef.current.time) timeLineRef.current = { time: timeLine[1] - 1, index: idx };
         });
         onCreateTimeLine();
     };
@@ -123,10 +124,13 @@ export const AnimationList = ({ object, sounds }: { object: fabric.Object; sound
     }, [inputRef]);
 
     useEffect(() => {
-        if (time === 0) setValue(0);
-        if (time < timeLineRef.current.time) setValue(time);
-        else if (time >= timeLineRef.current.time) setValue(0);
-    }, [time]);
+        if (!isPlaying) return;
+        if (time <= timeLineRef.current.time + 1) setValue(time);
+        if (time === timeLineRef.current.time + 1) {
+            setValue(0);
+            stop();
+        }
+    }, [time, isPlaying, stop]);
 
     return (
         <div

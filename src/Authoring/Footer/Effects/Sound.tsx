@@ -23,7 +23,6 @@ export const Sound = ({ data }: AnimationProps) => {
 
     const onClick = (soundId: string) => {
         setSoundId(soundId);
-        onCreateTimeLine();
         const audio = sound(`https://sol-api.esls.io/sounds/D1/${soundId}.mp3`);
         setSound(audio);
         const effects = object.data.effects.map((effect: EffectProps, index: number) => {
@@ -31,6 +30,7 @@ export const Sound = ({ data }: AnimationProps) => {
             return effect;
         });
         object.set('data', { ...object.get('data'), effects });
+        onCreateTimeLine();
     };
     const onCheckRange = () => {
         setEndTime();
@@ -69,6 +69,11 @@ export const Sound = ({ data }: AnimationProps) => {
         if (isPlay) setIsPlaying(true);
         else setIsPlaying(false);
     }, [isPlay]);
+
+    useEffect(() => {
+        if (isPlaying) onSetPlay(true);
+        else onSetPlay(false);
+    }, [isPlaying, onSetPlay]);
 
     useEffect(() => {
         document.addEventListener('click', (e) => {

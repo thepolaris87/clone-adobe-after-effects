@@ -20,13 +20,13 @@ export const Scale = ({ data }: AnimationProps) => {
     const timeRef = useRef(0);
 
     const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        onCreateTimeLine();
         setScaleValue({ ...scaleValue, [e.target.name]: Number(e.target.value) });
         const effects = object.data.effects.map((effect: EffectProps, index: number) => {
             if (index === id) return { ...effect, option: { ...effect.option, [e.target.name]: e.target.value } };
             return effect;
         });
         object.set('data', { ...object.get('data'), effects });
+        onCreateTimeLine();
     };
     const onCheckRange = () => {
         setEndTime();
@@ -59,6 +59,11 @@ export const Scale = ({ data }: AnimationProps) => {
         if (isPlay) setIsPlaying(true);
         else setIsPlaying(false);
     }, [isPlay]);
+
+    useEffect(() => {
+        if (isPlaying) onSetPlay(true);
+        else onSetPlay(false);
+    }, [isPlaying, onSetPlay]);
 
     useEffect(() => {
         onSetTimeLine({ object, id, timeMinValue, timeMaxValue });

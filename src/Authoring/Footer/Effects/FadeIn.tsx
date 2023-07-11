@@ -49,6 +49,11 @@ export const FadeIn = ({ data }: AnimationProps) => {
     }, [isPlay]);
 
     useEffect(() => {
+        if (isPlaying) onSetPlay(true);
+        else onSetPlay(false);
+    }, [isPlaying, onSetPlay]);
+
+    useEffect(() => {
         onSetTimeLine({ object, id, timeMinValue, timeMaxValue });
     }, [timeMinValue, timeMaxValue, id, object]);
 
