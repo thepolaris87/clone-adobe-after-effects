@@ -8,6 +8,7 @@ import { effects } from '../Effects/Effect';
 import { sound } from '@/util/util';
 import { fadeIn, fadeOut, rotate, move, scale, opacity, soundCheck } from '@/util/index';
 import { useTimeCheck } from '@/hooks/useTimeCheck';
+import { setTimeLine } from '@/util/helper';
 
 export const AnimationList = ({ object, sounds }: { object: fabric.Object; sounds?: TGetSound[] }) => {
     const editor = useAtomValue(editorAtom);
@@ -103,7 +104,6 @@ export const AnimationList = ({ object, sounds }: { object: fabric.Object; sound
     const onSetPlay = (flag: boolean) => {
         setIsPlay(flag);
     };
-
     const createTimeLine = useCallback(() => {
         setTimelineData([]);
         const timelineData: TimeLineDataProps[] = [];
@@ -176,38 +176,6 @@ export const AnimationList = ({ object, sounds }: { object: fabric.Object; sound
         });
         createTimeLine();
     };
-    const onSetTimeLine = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setValue(e.target.valueAsNumber);
-        console.log(timeLineData);
-        timeLineData.forEach((data: TimeLineDataProps) => {
-            const { key, t1, t2, from, to } = data;
-            const timeValue = e.target.valueAsNumber * 1000;
-            if (timeValue >= t1 && timeValue <= t2) {
-                if (key === 'sound') {
-                    if (!data.isPlayed) {
-                        data.isPlayed = true;
-                        data.play?.();
-                    }
-                } else {
-                    const val = timelineEasing.linear({ time: timeValue, t1, t2, from: from as number, to: to as number });
-                    console.log(val);
-                    (object as fabric.Object).set(key as keyof fabric.Object, val);
-                    editor?.canvas.renderAll();
-                }
-            } else {
-                if (key === 'sound') {
-                    if (data.isPlayed) {
-                        data.isPlayed = false;
-                        data.stop?.();
-                    }
-                }
-            }
-        });
-    };
-    const timelineEasing = {
-        linear: ({ time, t1, t2, from, to }: { time: number; t1: number; t2: number; from: number; to: number }) =>
-            ((to - from) / (t2 - t1)) * (time - t1) + from
-    };
 
     useEffect(() => {
         document.addEventListener('click', (e) => {
@@ -263,7 +231,15 @@ export const AnimationList = ({ object, sounds }: { object: fabric.Object; sound
                     Transform
                 </button>
                 {object.data.effects.length !== 0 && (
-                    <input className="w-[54.5%] cursor-pointer" type="range" min={1} max={100} value={value} step={1} onChange={(e) => onSetTimeLine(e)} />
+                    <input
+                        className="w-[54.5%] cursor-pointer"
+                        type="range"
+                        min={1}
+                        max={100}
+                        value={value}
+                        step={1}
+                        onChange={(e) => setTimeLine({ e, setValue, timeLineData, object, editor, isPlay, isPlaying })}
+                    />
                 )}
                 {object.data.effects.length !== 0 && isPlaying ? (
                     <button className="bg-[#CC0000] w-[60px] text-[white] p-[4px_12px] rounded-[8px] hover:bg-[#FF6666]" onClick={onStop}>

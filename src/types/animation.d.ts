@@ -40,6 +40,16 @@ type TimeLineDataProps = {
     isPlayed?: boolean;
 };
 
+type TimeLineBarProps = {
+    e: React.ChangeEvent<HTMLInputElement>;
+    setValue: (value: number) => void;
+    timeLineData: TimeLineDataProps[];
+    object: fabric.Object;
+    editor: Editor | null;
+    isPlay: boolean;
+    isPlaying: boolean;
+};
+
 type PlayEffectProps = {
     effect?: EffectProps;
     object: fabric.Object;
