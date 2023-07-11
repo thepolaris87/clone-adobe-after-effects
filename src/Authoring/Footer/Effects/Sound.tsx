@@ -9,7 +9,7 @@ import { wait, onSetTimeLine } from '@/util/util';
 import { soundCheck } from '@/util/soundCheck';
 
 export const Sound = ({ data }: AnimationProps) => {
-    const { sounds, object, id, onDeleteEffect, isPlay, setEndTime, onSetPlay, createTimeLine } = data;
+    const { sounds, object, id, onDeleteEffect, isPlay, setEndTime, onSetPlay, onCreateTimeLine } = data;
     const [open, setOpen] = useState(false);
     const [soundId, setSoundId] = useState<string>();
     const [_sound, setSound] = useState<ReturnType<typeof sound>>();
@@ -23,7 +23,7 @@ export const Sound = ({ data }: AnimationProps) => {
 
     const onClick = (soundId: string) => {
         setSoundId(soundId);
-        createTimeLine();
+        onCreateTimeLine();
         const audio = sound(`https://sol-api.esls.io/sounds/D1/${soundId}.mp3`);
         setSound(audio);
         const effects = object.data.effects.map((effect: EffectProps, index: number) => {

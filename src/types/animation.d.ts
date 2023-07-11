@@ -25,7 +25,7 @@ type AnimationProps = {
         isPlay: boolean;
         setEndTime: () => void;
         onSetPlay: (value: boolean) => void;
-        createTimeLine: () => void;
+        onCreateTimeLine: () => void;
     };
 };
 

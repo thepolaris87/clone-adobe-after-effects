@@ -9,7 +9,7 @@ import { onSetTimeLine } from '@/util/util';
 import { move } from '@/util';
 
 export const Move = ({ data }: AnimationProps) => {
-    const { object, id, onDeleteEffect, isPlay, setEndTime, onSetPlay, createTimeLine } = data;
+    const { object, id, onDeleteEffect, isPlay, setEndTime, onSetPlay, onCreateTimeLine } = data;
     const editor = useAtomValue(editorAtom);
     const [cancel, setCancel] = useState<any>();
     const [isPlaying, setIsPlaying] = useState(false);
@@ -20,6 +20,7 @@ export const Move = ({ data }: AnimationProps) => {
     const timeRef = useRef(0);
 
     const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        onCreateTimeLine();
         setMoveValue({ ...moveValue, [e.target.name]: Number(e.target.value) });
         const effects = object.data.effects.map((effect: EffectProps, index: number) => {
             if (index === id) return { ...effect, option: { ...effect.option, [e.target.name]: e.target.value } };

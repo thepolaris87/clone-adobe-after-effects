@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Move, Scale, Rotate, FadeIn, FadeOut, Opacity, Sound } from '../Effects';
 import { useAtomValue } from 'jotai';
 import { activeObjectAtom, editorAtom } from '@/atoms/atom';
@@ -8,7 +8,7 @@ import { effects } from '../Effects/Effect';
 import { sound } from '@/util/util';
 import { fadeIn, fadeOut, rotate, move, scale, opacity, soundCheck } from '@/util/index';
 import { useTimeCheck } from '@/hooks/useTimeCheck';
-import { setTimeLine } from '@/util/helper';
+import { createTimeLine, setTimeLine } from '@/util/helper';
 
 export const AnimationList = ({ object, sounds }: { object: fabric.Object; sounds?: TGetSound[] }) => {
     const editor = useAtomValue(editorAtom);
@@ -38,7 +38,7 @@ export const AnimationList = ({ object, sounds }: { object: fabric.Object; sound
         setDropDown(true);
         setEffect(title);
         setEndTime();
-        createTimeLine();
+        onCreateTimeLine();
     };
     const onDeleteEffect = (id: number) => {
         const obj = object.get('data');
@@ -46,7 +46,7 @@ export const AnimationList = ({ object, sounds }: { object: fabric.Object; sound
         object.set('data', { ...obj, effects: effects });
         setUpdate(!update);
         setEndTime();
-        createTimeLine();
+        onCreateTimeLine();
     };
     const onSetCancel = (_cancel: () => void) => {
         setCancel((prev: any) => {
@@ -104,77 +104,16 @@ export const AnimationList = ({ object, sounds }: { object: fabric.Object; sound
     const onSetPlay = (flag: boolean) => {
         setIsPlay(flag);
     };
-    const createTimeLine = useCallback(() => {
-        setTimelineData([]);
-        const timelineData: TimeLineDataProps[] = [];
-        const clone = { ...object }; // 원래 객체 복사
-        object.data.effects.forEach((effect: EffectProps) => {
-            const { option, timeLine, type } = effect;
-            if (type === 'FADEIN') timelineData.push({ key: 'opacity', t1: timeLine[0] * 1000, t2: timeLine[1] * 1000, from: 0, to: 1 });
-            if (type === 'FADEOUT') timelineData.push({ key: 'opacity', t1: timeLine[0] * 1000, t2: timeLine[1] * 1000, from: 1, to: 0 });
-            if (type === 'ROTATE')
-                timelineData.push({ key: 'angle', t1: timeLine[0] * 1000, t2: timeLine[1] * 1000, from: clone.angle as number, to: option?.angle as number });
-            if (type === 'MOVE') {
-                timelineData.push({
-                    key: 'top',
-                    t1: timeLine[0] * 1000,
-                    t2: timeLine[1] * 1000,
-                    from: clone?.top as number,
-                    to: option?.top as number
-                });
-                timelineData.push({
-                    key: 'left',
-                    t1: timeLine[0] * 1000,
-                    t2: timeLine[1] * 1000,
-                    from: clone?.left as number,
-                    to: option?.left as number
-                });
-            }
-            if (type === 'SCALE') {
-                timelineData.push({
-                    key: 'scaleX',
-                    t1: timeLine[0] * 1000,
-                    t2: timeLine[1] * 1000,
-                    from: clone?.scaleX as number,
-                    to: option?.scaleX as number
-                });
-                timelineData.push({
-                    key: 'scaleY',
-                    t1: timeLine[0] * 1000,
-                    t2: timeLine[1] * 1000,
-                    from: clone?.scaleY as number,
-                    to: option?.scaleY as number
-                });
-            }
-            if (type === 'OPACITY') {
-                const interval = option?.interval || 1;
-                const [startTime, endTime] = timeLine;
-                let t1 = startTime * 1000;
-                let t2 = t1;
-                let opacity = true;
-                while (t2 < endTime * 1000 - interval + 1 * 1000) {
-                    t2 = t1 + interval * 1000;
-                    timelineData.push({ key: 'opacity', t1: t1, t2: t2, from: Number(opacity), to: Number(!opacity) });
-                    t1 = t2;
-                    opacity = !opacity;
-                }
-                timelineData.push({ key: 'opacity', t1: t2, t2: t2 + interval * 1000, from: 1, to: 1 });
-            }
-            if (type === 'SOUND') {
-                const audio = sound(`https://sol-api.esls.io/sounds/D1/${option?.src}.mp3`);
-                audio.audio.loop = true;
-                timelineData.push({ key: 'sound', t1: timeLine[0] * 1000, t2: timeLine[1] * 1000, ...audio });
-            }
-        });
-        setTimelineData(timelineData);
-    }, [object]);
+    const onCreateTimeLine = () => {
+        createTimeLine({ setTimelineData, object });
+    };
     const setEndTime = () => {
         timeLineRef.current = { time: 0, index: 0 };
         object.data.effects.map((effect: EffectProps, idx: number) => {
             const { timeLine } = effect;
             if (timeLine[1] > timeLineRef.current.time) timeLineRef.current = { time: timeLine[1], index: idx };
         });
-        createTimeLine();
+        onCreateTimeLine();
     };
 
     useEffect(() => {
@@ -263,7 +202,7 @@ export const AnimationList = ({ object, sounds }: { object: fabric.Object; sound
                             isPlay: isPlaying,
                             setEndTime: setEndTime,
                             onSetPlay: onSetPlay,
-                            createTimeLine: createTimeLine,
+                            onCreateTimeLine: onCreateTimeLine,
                             sounds: sounds
                         };
                         return (

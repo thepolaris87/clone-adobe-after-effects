@@ -9,7 +9,7 @@ import { onSetTimeLine } from '@/util/util';
 import { rotate } from '@/util';
 
 export const Rotate = ({ data }: AnimationProps) => {
-    const { object, id, onDeleteEffect, isPlay, setEndTime, onSetPlay, createTimeLine } = data;
+    const { object, id, onDeleteEffect, isPlay, setEndTime, onSetPlay, onCreateTimeLine } = data;
     const editor = useAtomValue(editorAtom);
     const [cancel, setCancel] = useState<any>();
     const [isPlaying, setIsPlaying] = useState(false);
@@ -26,7 +26,7 @@ export const Rotate = ({ data }: AnimationProps) => {
             return effect;
         });
         object.set('data', { ...object.get('data'), effects });
-        createTimeLine();
+        onCreateTimeLine();
     };
     const onCheckRange = () => {
         setEndTime();
