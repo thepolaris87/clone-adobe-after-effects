@@ -25,7 +25,19 @@ type AnimationProps = {
         isPlay: boolean;
         setEndTime: () => void;
         onSetPlay: (value: boolean) => void;
+        createTimeLine: () => void;
     };
+};
+
+type TimeLineDataProps = {
+    key: string;
+    t1: number;
+    t2: number;
+    from?: number;
+    to?: number;
+    play?: () => void;
+    stop?: () => void;
+    isPlayed?: boolean;
 };
 
 type PlayEffectProps = {

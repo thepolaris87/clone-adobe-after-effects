@@ -19,6 +19,7 @@ export const FadeIn = ({ data }: AnimationProps) => {
     9;
 
     const onCheckRange = () => {
+        setEndTime();
         if (timeMaxValue - timeMinValue > 1) return;
         setTimeMaxValue(timeMaxValue + 1);
         setTimeMinValue(timeMinValue - 1);
@@ -49,8 +50,7 @@ export const FadeIn = ({ data }: AnimationProps) => {
 
     useEffect(() => {
         onSetTimeLine({ object, id, timeMinValue, timeMaxValue });
-        setEndTime();
-    }, [timeMinValue, timeMaxValue, id, object, setEndTime]);
+    }, [timeMinValue, timeMaxValue, id, object]);
 
     return (
         <div className="flex flex-wrap justify-between mb-2">

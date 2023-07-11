@@ -9,7 +9,7 @@ import { onSetTimeLine } from '@/util/util';
 import { opacity } from '@/util';
 
 export const Opacity = ({ data }: AnimationProps) => {
-    const { object, id, onDeleteEffect, isPlay, setEndTime, onSetPlay } = data;
+    const { object, id, onDeleteEffect, isPlay, setEndTime, onSetPlay, createTimeLine } = data;
     const editor = useAtomValue(editorAtom);
     const [cancel, setCancel] = useState<any>();
     const [isPlaying, setIsPlaying] = useState(false);
@@ -19,6 +19,7 @@ export const Opacity = ({ data }: AnimationProps) => {
     const timeRef = useRef(0);
 
     const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        createTimeLine();
         setInterval(Number(e.target.value));
         const effects = object.data.effects.map((effect: EffectProps, index: number) => {
             if (index === id) return { ...effect, option: { ...effect.option, interval: e.target.value } };
@@ -27,6 +28,7 @@ export const Opacity = ({ data }: AnimationProps) => {
         object.set('data', { ...object.get('data'), effects });
     };
     const onCheckRange = () => {
+        setEndTime();
         if (timeMaxValue - timeMinValue > 1) return;
         setTimeMaxValue(timeMaxValue + 1);
         setTimeMinValue(timeMinValue - 1);
@@ -60,8 +62,7 @@ export const Opacity = ({ data }: AnimationProps) => {
 
     useEffect(() => {
         onSetTimeLine({ object, id, timeMinValue, timeMaxValue });
-        setEndTime();
-    }, [timeMinValue, timeMaxValue, id, object, setEndTime]);
+    }, [timeMinValue, timeMaxValue, id, object]);
 
     useEffect(() => {
         const effects = object.data.effects.map((effect: EffectProps, index: number) => {

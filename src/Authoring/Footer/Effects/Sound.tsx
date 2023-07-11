@@ -9,7 +9,7 @@ import { wait, onSetTimeLine } from '@/util/util';
 import { soundCheck } from '@/util/soundCheck';
 
 export const Sound = ({ data }: AnimationProps) => {
-    const { sounds, object, id, onDeleteEffect, isPlay, setEndTime, onSetPlay } = data;
+    const { sounds, object, id, onDeleteEffect, isPlay, setEndTime, onSetPlay, createTimeLine } = data;
     const [open, setOpen] = useState(false);
     const [soundId, setSoundId] = useState<string>();
     const [_sound, setSound] = useState<ReturnType<typeof sound>>();
@@ -23,6 +23,7 @@ export const Sound = ({ data }: AnimationProps) => {
 
     const onClick = (soundId: string) => {
         setSoundId(soundId);
+        createTimeLine();
         const audio = sound(`https://sol-api.esls.io/sounds/D1/${soundId}.mp3`);
         setSound(audio);
         const effects = object.data.effects.map((effect: EffectProps, index: number) => {
@@ -32,6 +33,7 @@ export const Sound = ({ data }: AnimationProps) => {
         object.set('data', { ...object.get('data'), effects });
     };
     const onCheckRange = () => {
+        setEndTime();
         if (timeMaxValue - timeMinValue > 1) return;
         setTimeMaxValue(timeMaxValue + 1);
         setTimeMinValue(timeMinValue - 1);
@@ -69,11 +71,6 @@ export const Sound = ({ data }: AnimationProps) => {
     }, [isPlay]);
 
     useEffect(() => {
-        if (isPlay) setIsPlaying(true);
-        else setIsPlaying(false);
-    }, [isPlay]);
-
-    useEffect(() => {
         document.addEventListener('click', (e) => {
             if (e.target === inputRef.current) setOpen(true);
             else if (divRef.current && !divRef.current.contains(e.target as Node)) setOpen(false);
@@ -83,8 +80,7 @@ export const Sound = ({ data }: AnimationProps) => {
 
     useEffect(() => {
         onSetTimeLine({ object, id, timeMinValue, timeMaxValue });
-        setEndTime();
-    }, [timeMinValue, timeMaxValue, id, object, setEndTime]);
+    }, [timeMinValue, timeMaxValue, id, object]);
 
     return (
         <div className="flex flex-wrap justify-between mb-2">

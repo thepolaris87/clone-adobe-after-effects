@@ -6,8 +6,8 @@ import { MdChevronRight, MdKeyboardArrowDown } from 'react-icons/md';
 import { BiCaretDownSquare } from 'react-icons/bi';
 import { effects } from '../Effects/Effect';
 import { sound } from '@/util/util';
-import css from '../css/TimeLine.module.css';
 import { fadeIn, fadeOut, rotate, move, scale, opacity, soundCheck } from '@/util/index';
+import { useTimeCheck } from '@/hooks/useTimeCheck';
 
 export const AnimationList = ({ object, sounds }: { object: fabric.Object; sounds?: TGetSound[] }) => {
     const editor = useAtomValue(editorAtom);
@@ -26,6 +26,8 @@ export const AnimationList = ({ object, sounds }: { object: fabric.Object; sound
     const timeLineRef = useRef({ time: 0, index: 0 });
     const timeRef = useRef(0);
     const soundIdRef = useRef(0);
+    const [timeLineData, setTimelineData] = useState<TimeLineDataProps[]>([]);
+    const { start, stop, time } = useTimeCheck();
 
     const onAddEffect = (title: TEffect) => {
         const option = effects[title].option;
@@ -35,6 +37,7 @@ export const AnimationList = ({ object, sounds }: { object: fabric.Object; sound
         setDropDown(true);
         setEffect(title);
         setEndTime();
+        createTimeLine();
     };
     const onDeleteEffect = (id: number) => {
         const obj = object.get('data');
@@ -42,6 +45,7 @@ export const AnimationList = ({ object, sounds }: { object: fabric.Object; sound
         object.set('data', { ...obj, effects: effects });
         setUpdate(!update);
         setEndTime();
+        createTimeLine();
     };
     const onSetCancel = (_cancel: () => void) => {
         setCancel((prev: any) => {
@@ -52,6 +56,7 @@ export const AnimationList = ({ object, sounds }: { object: fabric.Object; sound
         const arr: number[] = [];
         setCancel([]);
         setIsPlaying(true);
+        start();
         const obj = object.get('data');
         obj.effects.map(async (effect: EffectProps, idx: number) => {
             const [startTime, endTime] = effect.timeLine;
@@ -98,23 +103,123 @@ export const AnimationList = ({ object, sounds }: { object: fabric.Object; sound
     const onSetPlay = (flag: boolean) => {
         setIsPlay(flag);
     };
-    const setEndTime = useCallback(() => {
+
+    const createTimeLine = useCallback(() => {
+        setTimelineData([]);
+        const timelineData: TimeLineDataProps[] = [];
+        const clone = { ...object }; // 원래 객체 복사
+        object.data.effects.forEach((effect: EffectProps) => {
+            const { option, timeLine, type } = effect;
+            if (type === 'FADEIN') timelineData.push({ key: 'opacity', t1: timeLine[0] * 1000, t2: timeLine[1] * 1000, from: 0, to: 1 });
+            if (type === 'FADEOUT') timelineData.push({ key: 'opacity', t1: timeLine[0] * 1000, t2: timeLine[1] * 1000, from: 1, to: 0 });
+            if (type === 'ROTATE')
+                timelineData.push({ key: 'angle', t1: timeLine[0] * 1000, t2: timeLine[1] * 1000, from: clone.angle as number, to: option?.angle as number });
+            if (type === 'MOVE') {
+                timelineData.push({
+                    key: 'top',
+                    t1: timeLine[0] * 1000,
+                    t2: timeLine[1] * 1000,
+                    from: clone?.top as number,
+                    to: option?.top as number
+                });
+                timelineData.push({
+                    key: 'left',
+                    t1: timeLine[0] * 1000,
+                    t2: timeLine[1] * 1000,
+                    from: clone?.left as number,
+                    to: option?.left as number
+                });
+            }
+            if (type === 'SCALE') {
+                timelineData.push({
+                    key: 'scaleX',
+                    t1: timeLine[0] * 1000,
+                    t2: timeLine[1] * 1000,
+                    from: clone?.scaleX as number,
+                    to: option?.scaleX as number
+                });
+                timelineData.push({
+                    key: 'scaleY',
+                    t1: timeLine[0] * 1000,
+                    t2: timeLine[1] * 1000,
+                    from: clone?.scaleY as number,
+                    to: option?.scaleY as number
+                });
+            }
+            if (type === 'OPACITY') {
+                const interval = option?.interval || 1;
+                const [startTime, endTime] = timeLine;
+                let t1 = startTime * 1000;
+                let t2 = t1;
+                let opacity = true;
+                while (t2 < endTime * 1000 - interval + 1 * 1000) {
+                    t2 = t1 + interval * 1000;
+                    timelineData.push({ key: 'opacity', t1: t1, t2: t2, from: Number(opacity), to: Number(!opacity) });
+                    t1 = t2;
+                    opacity = !opacity;
+                }
+                timelineData.push({ key: 'opacity', t1: t2, t2: t2 + interval * 1000, from: 1, to: 1 });
+            }
+            if (type === 'SOUND') {
+                const audio = sound(`https://sol-api.esls.io/sounds/D1/${option?.src}.mp3`);
+                audio.audio.loop = true;
+                timelineData.push({ key: 'sound', t1: timeLine[0] * 1000, t2: timeLine[1] * 1000, ...audio });
+            }
+        });
+        setTimelineData(timelineData);
+    }, [object]);
+    const setEndTime = () => {
         timeLineRef.current = { time: 0, index: 0 };
         object.data.effects.map((effect: EffectProps, idx: number) => {
             const { timeLine } = effect;
             if (timeLine[1] > timeLineRef.current.time) timeLineRef.current = { time: timeLine[1], index: idx };
         });
-    }, [object]);
-
-    useEffect(() => {
-        setEndTime();
-    }, [setEndTime]);
+        createTimeLine();
+    };
+    const onSetTimeLine = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setValue(e.target.valueAsNumber);
+        console.log(timeLineData);
+        timeLineData.forEach((data: TimeLineDataProps) => {
+            const { key, t1, t2, from, to } = data;
+            const timeValue = e.target.valueAsNumber * 1000;
+            if (timeValue >= t1 && timeValue <= t2) {
+                if (key === 'sound') {
+                    if (!data.isPlayed) {
+                        data.isPlayed = true;
+                        data.play?.();
+                    }
+                } else {
+                    const val = timelineEasing.linear({ time: timeValue, t1, t2, from: from as number, to: to as number });
+                    console.log(val);
+                    (object as fabric.Object).set(key as keyof fabric.Object, val);
+                    editor?.canvas.renderAll();
+                }
+            } else {
+                if (key === 'sound') {
+                    if (data.isPlayed) {
+                        data.isPlayed = false;
+                        data.stop?.();
+                    }
+                }
+            }
+        });
+    };
+    const timelineEasing = {
+        linear: ({ time, t1, t2, from, to }: { time: number; t1: number; t2: number; from: number; to: number }) =>
+            ((to - from) / (t2 - t1)) * (time - t1) + from
+    };
 
     useEffect(() => {
         document.addEventListener('click', (e) => {
             if (inputRef.current && !inputRef.current.contains(e.target as Node)) setDropDown(false);
         });
     }, [inputRef]);
+
+    useEffect(() => {
+        if (time === 0) setValue(0);
+        if (time < timeLineRef.current.time) setValue(time);
+        else if (time >= timeLineRef.current.time) setValue(0);
+    }, [time]);
 
     return (
         <div
@@ -157,23 +262,19 @@ export const AnimationList = ({ object, sounds }: { object: fabric.Object; sound
                     {transform ? <MdKeyboardArrowDown /> : <MdChevronRight />}
                     Transform
                 </button>
-                <input
-                    className="w-[54.5%] cursor-pointer"
-                    type="range"
-                    min={1}
-                    max={100}
-                    value={value}
-                    step={1}
-                    onChange={(e) => setValue(e.target.valueAsNumber)}
-                />
-                {isPlaying ? (
+                {object.data.effects.length !== 0 && (
+                    <input className="w-[54.5%] cursor-pointer" type="range" min={1} max={100} value={value} step={1} onChange={(e) => onSetTimeLine(e)} />
+                )}
+                {object.data.effects.length !== 0 && isPlaying ? (
                     <button className="bg-[#CC0000] w-[60px] text-[white] p-[4px_12px] rounded-[8px] hover:bg-[#FF6666]" onClick={onStop}>
                         Stop
                     </button>
                 ) : (
-                    <button className="bg-[orange] w-[60px] text-[white] p-[4px_12px] rounded-[8px] hover:bg-[#FFB129]" onClick={onPlay}>
-                        Play
-                    </button>
+                    object.data.effects.length !== 0 && (
+                        <button className="bg-[orange] w-[60px] text-[white] p-[4px_12px] rounded-[8px] hover:bg-[#FFB129]" onClick={onPlay}>
+                            Play
+                        </button>
+                    )
                 )}
             </div>
             {transform ? (
@@ -186,6 +287,7 @@ export const AnimationList = ({ object, sounds }: { object: fabric.Object; sound
                             isPlay: isPlaying,
                             setEndTime: setEndTime,
                             onSetPlay: onSetPlay,
+                            createTimeLine: createTimeLine,
                             sounds: sounds
                         };
                         return (

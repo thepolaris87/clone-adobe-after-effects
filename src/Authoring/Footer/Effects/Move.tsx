@@ -9,7 +9,7 @@ import { onSetTimeLine } from '@/util/util';
 import { move } from '@/util';
 
 export const Move = ({ data }: AnimationProps) => {
-    const { object, id, onDeleteEffect, isPlay, setEndTime, onSetPlay } = data;
+    const { object, id, onDeleteEffect, isPlay, setEndTime, onSetPlay, createTimeLine } = data;
     const editor = useAtomValue(editorAtom);
     const [cancel, setCancel] = useState<any>();
     const [isPlaying, setIsPlaying] = useState(false);
@@ -28,6 +28,7 @@ export const Move = ({ data }: AnimationProps) => {
         object.set('data', { ...object.get('data'), effects });
     };
     const onCheckRange = () => {
+        setEndTime();
         if (timeMaxValue - timeMinValue > 1) return;
         setTimeMaxValue(timeMaxValue + 1);
         setTimeMinValue(timeMinValue - 1);
@@ -60,8 +61,7 @@ export const Move = ({ data }: AnimationProps) => {
 
     useEffect(() => {
         onSetTimeLine({ object, id, timeMinValue, timeMaxValue });
-        setEndTime();
-    }, [timeMinValue, timeMaxValue, id, object, setEndTime]);
+    }, [timeMinValue, timeMaxValue, id, object]);
 
     return (
         <div className="flex flex-wrap justify-between mb-2">

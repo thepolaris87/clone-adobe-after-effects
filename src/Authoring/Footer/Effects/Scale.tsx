@@ -9,7 +9,7 @@ import { onSetTimeLine } from '@/util/util';
 import { scale } from '@/util';
 
 export const Scale = ({ data }: AnimationProps) => {
-    const { object, id, onDeleteEffect, isPlay, setEndTime, onSetPlay } = data;
+    const { object, id, onDeleteEffect, isPlay, setEndTime, onSetPlay, createTimeLine } = data;
     const editor = useAtomValue(editorAtom);
     const [isPlaying, setIsPlaying] = useState(false);
     const [cancel, setCancel] = useState<any>();
@@ -20,6 +20,7 @@ export const Scale = ({ data }: AnimationProps) => {
     const timeRef = useRef(0);
 
     const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        createTimeLine();
         setScaleValue({ ...scaleValue, [e.target.name]: Number(e.target.value) });
         const effects = object.data.effects.map((effect: EffectProps, index: number) => {
             if (index === id) return { ...effect, option: { ...effect.option, [e.target.name]: e.target.value } };
@@ -28,6 +29,7 @@ export const Scale = ({ data }: AnimationProps) => {
         object.set('data', { ...object.get('data'), effects });
     };
     const onCheckRange = () => {
+        setEndTime();
         if (timeMaxValue - timeMinValue > 1) return;
         setTimeMaxValue(timeMaxValue + 1);
         setTimeMinValue(timeMinValue - 1);
@@ -60,8 +62,7 @@ export const Scale = ({ data }: AnimationProps) => {
 
     useEffect(() => {
         onSetTimeLine({ object, id, timeMinValue, timeMaxValue });
-        setEndTime();
-    }, [timeMinValue, timeMaxValue, id, object, setEndTime]);
+    }, [timeMinValue, timeMaxValue, id, object]);
 
     return (
         <div className="flex flex-wrap justify-between mb-2">
