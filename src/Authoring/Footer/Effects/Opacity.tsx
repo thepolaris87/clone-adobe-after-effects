@@ -35,7 +35,7 @@ export const Opacity = ({ data }: AnimationProps) => {
         setTimeMaxValue(timeMaxValue + 1);
         setTimeMinValue(timeMinValue - 1);
     };
-    const onSetCancel = (_cancel: any, endTime: number) => {
+    const onSetCancel = (_cancel: () => void, endTime: number) => {
         setCancel(() => {
             return [_cancel, endTime];
         });

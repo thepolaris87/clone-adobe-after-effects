@@ -20,7 +20,6 @@ export const opacity = async ({ effect, object, editor, endTime, onSetCancel }: 
             const option = { opacity: 0 };
             const onComplete = () => {
                 resolve();
-                // object.set('opacity', 1);
             };
             const cancel: any = onPlayAnimation({ object, editor, endTime, option, onComplete, duration });
             onSetCancel(cancel[0], endTime * 1000, object);
