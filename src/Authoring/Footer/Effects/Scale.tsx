@@ -11,12 +11,13 @@ import { scale } from '@/util';
 export const Scale = ({ data }: AnimationProps) => {
     const { object, id, onDeleteEffect, isPlay, setEndTime, onSetPlay, onCreateTimeLine } = data;
     const editor = useAtomValue(editorAtom);
+    const effect = object.data.effects[id];
     const [isPlaying, setIsPlaying] = useState(false);
     const [cancel, setCancel] = useState<any>();
-    const [scaleValue, setScaleValue] = useState({ scaleX: object.scaleX, scaleY: object.scaleY });
+    const [scaleValue, setScaleValue] = useState({ scaleX: effect.option.scaleX, scaleY: effect.option.scaleY });
     const [originValue, setOriginValue] = useState({ scaleX: 0, scaleY: 0 });
-    const [timeMinValue, setTimeMinValue] = useState(0);
-    const [timeMaxValue, setTimeMaxValue] = useState(100);
+    const [timeMinValue, setTimeMinValue] = useState(effect.timeLine[0]);
+    const [timeMaxValue, setTimeMaxValue] = useState(effect.timeLine[1]);
     const timeRef = useRef(0);
 
     const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {

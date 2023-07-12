@@ -11,12 +11,13 @@ import { move } from '@/util';
 export const Move = ({ data }: AnimationProps) => {
     const { object, id, onDeleteEffect, isPlay, setEndTime, onSetPlay, onCreateTimeLine } = data;
     const editor = useAtomValue(editorAtom);
+    const effect = object.data.effects[id];
     const [cancel, setCancel] = useState<any>();
     const [isPlaying, setIsPlaying] = useState(false);
-    const [moveValue, setMoveValue] = useState({ top: object.top, left: object.left });
+    const [moveValue, setMoveValue] = useState({ top: effect.option.top, left: effect.option.left });
     const [originValue, setOriginValue] = useState({ top: 0, left: 0 });
-    const [timeMinValue, setTimeMinValue] = useState(0);
-    const [timeMaxValue, setTimeMaxValue] = useState(100);
+    const [timeMinValue, setTimeMinValue] = useState(effect.timeLine[0]);
+    const [timeMaxValue, setTimeMaxValue] = useState(effect.timeLine[1]);
     const timeRef = useRef(0);
 
     const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {

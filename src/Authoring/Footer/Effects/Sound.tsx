@@ -10,13 +10,14 @@ import { soundCheck } from '@/util/soundCheck';
 
 export const Sound = ({ data }: AnimationProps) => {
     const { sounds, object, id, onDeleteEffect, isPlay, setEndTime, onSetPlay, onCreateTimeLine } = data;
+    const effect = object.data.effects[id];
     const [open, setOpen] = useState(false);
-    const [soundId, setSoundId] = useState<string>();
+    const [soundId, setSoundId] = useState<string>(effect.option.src);
     const [_sound, setSound] = useState<ReturnType<typeof sound>>();
     const [playing, setPlaying] = useState<boolean>(false);
     const [isPlaying, setIsPlaying] = useState(false);
-    const [timeMinValue, setTimeMinValue] = useState(0);
-    const [timeMaxValue, setTimeMaxValue] = useState(100);
+    const [timeMinValue, setTimeMinValue] = useState(effect.timeLine[0]);
+    const [timeMaxValue, setTimeMaxValue] = useState(effect.timeLine[1]);
     const divRef = useRef<HTMLDivElement | null>(null);
     const inputRef = useRef<HTMLInputElement | null>(null);
     const soundIdRef = useRef<number>(0);
