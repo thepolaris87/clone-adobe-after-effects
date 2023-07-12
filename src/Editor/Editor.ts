@@ -25,4 +25,9 @@ export default class Editor {
         const data = this.canvas.getObjects();
         return data;
     }
+    remove(object: fabric.Object) {
+        this.canvas.remove(object);
+        const data = this.canvas.getObjects();
+        return data;
+    }
 }
