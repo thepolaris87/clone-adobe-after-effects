@@ -146,101 +146,101 @@ export const AnimationList = ({ object, sounds }: { object: fabric.Object; sound
         });
     }, [time, isPlaying, stop, opacityCancel, object]);
 
-    return (
-        !activeObjId && (
-            <div
-                className="rounded-[8px] mb-4 p-[4px_10px] shadow-[1px_3px_5px_1px_#cdd8dd] cursor-pointer"
-                style={{
-                    backgroundColor: activeObject && activeObject?.data?.id === object.data.id ? '#dddbdb' : '#ecebeb'
-                }}
-                onClick={() => {
-                    editor?.canvas.setActiveObject(object);
-                    editor?.canvas.renderAll();
-                }}
-            >
-                <div className="flex justify-between p-2">
-                    <div className="text-[20px]">{object.data.type}</div>
-                    <div className="hidden sm:flex items-center">
-                        <BiCaretDownSquare />
-                        <span className="relative">
-                            <input
-                                type="button"
-                                className="w-[500px] rounded-sm shadow-[1px_3px_5px_1px_#cdd8dd] bg-[white] cursor-pointer ml-2 p-[3px] hover:shadow-[0px_1px_5px_1px_#50bcdf]"
-                                onClick={() => setDropDown(true)}
-                                value={effect ? effect : 'Select animation'}
-                                ref={inputRef}
-                                disabled={isPlay || isPlaying}
-                            ></input>
-                            {dropDown && (
-                                <ul className="bg-[white] w-[500px] shadow-[1px_1px_3px_1px_#cdd8dd] text-center cursor-pointer absolute top-1 ml-2 z-20">
-                                    {Object.keys(effects)?.map((effect, index) => {
-                                        return (
-                                            <li key={index} className="hover:bg-[#d9edf4]" onClick={() => onAddEffect(effect as TEffect)}>
-                                                {effect}
-                                            </li>
-                                        );
-                                    })}
-                                </ul>
-                            )}
-                        </span>
-                    </div>
-                </div>
-                <div className="flex flex-wrap justify-between items-center p-[8px_4px]">
-                    <button className="w-[40.3%] flex cursor-pointer" onClick={() => setTransForm(!transform)}>
-                        {transform ? <MdKeyboardArrowDown /> : <MdChevronRight />}
-                        Transform
-                    </button>
-                    {object.data.effects.length !== 0 && (
+    return !activeObjId ? (
+        <div
+            className="rounded-[8px] mb-4 p-[4px_10px] shadow-[1px_3px_5px_1px_#cdd8dd] cursor-pointer"
+            style={{
+                backgroundColor: activeObject && activeObject?.data?.id === object.data.id ? '#dddbdb' : '#ecebeb'
+            }}
+            onClick={() => {
+                editor?.canvas.setActiveObject(object);
+                editor?.canvas.renderAll();
+            }}
+        >
+            <div className="flex justify-between p-2">
+                <div className="text-[20px]">{object.data.type}</div>
+                <div className="hidden sm:flex items-center">
+                    <BiCaretDownSquare />
+                    <span className="relative">
                         <input
-                            className="w-[54.5%] cursor-pointer"
-                            type="range"
-                            min={1}
-                            max={100}
-                            value={value}
-                            step={1}
-                            onChange={(e) => setTimeLine({ e, setValue, timeLineData, object, editor, isPlay, isPlaying })}
-                        />
-                    )}
-                    {object.data.effects.length !== 0 && isPlaying ? (
-                        <button className="bg-[#CC0000] w-[60px] text-[white] p-[4px_12px] rounded-[8px] hover:bg-[#FF6666]" onClick={onStop}>
-                            Stop
-                        </button>
-                    ) : (
-                        object.data.effects.length !== 0 && (
-                            <button className="bg-[orange] w-[60px] text-[white] p-[4px_12px] rounded-[8px] hover:bg-[#FFB129]" onClick={onPlay}>
-                                Play
-                            </button>
-                        )
-                    )}
+                            type="button"
+                            className="w-[500px] rounded-sm shadow-[1px_3px_5px_1px_#cdd8dd] bg-[white] cursor-pointer ml-2 p-[3px] hover:shadow-[0px_1px_5px_1px_#50bcdf]"
+                            onClick={() => setDropDown(true)}
+                            value={effect ? effect : 'Select animation'}
+                            ref={inputRef}
+                            disabled={isPlay || isPlaying}
+                        ></input>
+                        {dropDown && (
+                            <ul className="bg-[white] w-[500px] shadow-[1px_1px_3px_1px_#cdd8dd] text-center cursor-pointer absolute top-1 ml-2 z-20">
+                                {Object.keys(effects)?.map((effect, index) => {
+                                    return (
+                                        <li key={index} className="hover:bg-[#d9edf4]" onClick={() => onAddEffect(effect as TEffect)}>
+                                            {effect}
+                                        </li>
+                                    );
+                                })}
+                            </ul>
+                        )}
+                    </span>
                 </div>
-                {transform ? (
-                    <div className="p-[3px_1px_3px_10px]">
-                        {object.data.effects.map((effects: EffectProps, index: number) => {
-                            const data = {
-                                object: object,
-                                id: index,
-                                onDeleteEffect: onDeleteEffect,
-                                isPlay: isPlaying,
-                                setEndTime: setEndTime,
-                                onSetPlay: onSetPlay,
-                                onCreateTimeLine: onCreateTimeLine,
-                                sounds: sounds
-                            };
-                            return (
-                                <React.Fragment key={index}>
-                                    {effects.type === 'FADEIN' && <FadeIn data={data} />}
-                                    {effects.type === 'FADEOUT' && <FadeOut data={data} />}
-                                    {effects.type === 'MOVE' && <Move data={data} />}
-                                    {effects.type === 'SCALE' && <Scale data={data} />}
-                                    {effects.type === 'ROTATE' && <Rotate data={data} />}
-                                    {effects.type === 'OPACITY' && <Opacity data={data} />}
-                                    {effects.type === 'SOUND' && <Sound data={data} />}
-                                </React.Fragment>
-                            );
-                        })}
-                    </div>
-                ) : null}
             </div>
-        )
+            <div className="flex flex-wrap justify-between items-center p-[8px_4px]">
+                <button className="w-[40.3%] flex cursor-pointer" onClick={() => setTransForm(!transform)}>
+                    {transform ? <MdKeyboardArrowDown /> : <MdChevronRight />}
+                    Transform
+                </button>
+                {object.data.effects.length !== 0 && (
+                    <input
+                        className="w-[54.5%] cursor-pointer"
+                        type="range"
+                        min={1}
+                        max={100}
+                        value={value}
+                        step={1}
+                        onChange={(e) => setTimeLine({ e, setValue, timeLineData, object, editor, isPlay, isPlaying })}
+                    />
+                )}
+                {object.data.effects.length !== 0 && isPlaying ? (
+                    <button className="bg-[#CC0000] w-[60px] text-[white] p-[4px_12px] rounded-[8px] hover:bg-[#FF6666]" onClick={onStop}>
+                        Stop
+                    </button>
+                ) : (
+                    object.data.effects.length !== 0 && (
+                        <button className="bg-[orange] w-[60px] text-[white] p-[4px_12px] rounded-[8px] hover:bg-[#FFB129]" onClick={onPlay}>
+                            Play
+                        </button>
+                    )
+                )}
+            </div>
+            {transform ? (
+                <div className="p-[3px_1px_3px_10px]">
+                    {object.data.effects.map((effects: EffectProps, index: number) => {
+                        const data = {
+                            object: object,
+                            id: index,
+                            onDeleteEffect: onDeleteEffect,
+                            isPlay: isPlaying,
+                            setEndTime: setEndTime,
+                            onSetPlay: onSetPlay,
+                            onCreateTimeLine: onCreateTimeLine,
+                            sounds: sounds
+                        };
+                        return (
+                            <React.Fragment key={index}>
+                                {effects.type === 'FADEIN' && <FadeIn data={data} />}
+                                {effects.type === 'FADEOUT' && <FadeOut data={data} />}
+                                {effects.type === 'MOVE' && <Move data={data} />}
+                                {effects.type === 'SCALE' && <Scale data={data} />}
+                                {effects.type === 'ROTATE' && <Rotate data={data} />}
+                                {effects.type === 'OPACITY' && <Opacity data={data} />}
+                                {effects.type === 'SOUND' && <Sound data={data} />}
+                            </React.Fragment>
+                        );
+                    })}
+                </div>
+            ) : null}
+        </div>
+    ) : (
+        <></>
     );
 };
