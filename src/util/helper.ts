@@ -52,13 +52,13 @@ export const createTimeLine = ({ setTimelineData, object }: { setTimelineData: (
             let t1 = startTime * 1000;
             let t2 = t1;
             let opacity = true;
-            while (t2 < endTime * 1000 - interval + 1 * 1000) {
+            while (t2 < endTime * 1000 - interval * 1000) {
                 t2 = t1 + interval * 1000;
                 timelineData.push({ key: 'opacity', t1: t1, t2: t2, from: Number(opacity), to: Number(!opacity) });
                 t1 = t2;
                 opacity = !opacity;
             }
-            timelineData.push({ key: 'opacity', t1: t2, t2: t2 + interval * 1000, from: 1, to: 1 });
+            timelineData.push({ key: 'opacity', t1: t2, t2: t2, from: 1, to: 1 });
         }
         if (type === 'SOUND') {
             const audio = sound(`https://sol-api.esls.io/sounds/D1/${option?.src}.mp3`);

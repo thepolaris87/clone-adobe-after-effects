@@ -7,6 +7,7 @@ import { editorAtom } from '@/atoms/atom';
 import { useAtomValue } from 'jotai';
 import { onSetTimeLine } from '@/util/util';
 import { opacity } from '@/util';
+import { useTimeCheck } from '@/hooks/useTimeCheck';
 
 export const Opacity = ({ data }: AnimationProps) => {
     const { object, id, onDeleteEffect, isPlay, setEndTime, onSetPlay, onCreateTimeLine } = data;
@@ -17,11 +18,12 @@ export const Opacity = ({ data }: AnimationProps) => {
     const [timeMinValue, setTimeMinValue] = useState(0);
     const [timeMaxValue, setTimeMaxValue] = useState(100);
     const timeRef = useRef(0);
+    const { start, stop, time } = useTimeCheck();
 
     const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setInterval(Number(e.target.value));
         const effects = object.data.effects.map((effect: EffectProps, index: number) => {
-            if (index === id) return { ...effect, option: { ...effect.option, interval: e.target.value } };
+            if (index === id) return { ...effect, option: { ...effect.option, interval: Number(e.target.value) } };
             return effect;
         });
         object.set('data', { ...object.get('data'), effects });
@@ -33,14 +35,15 @@ export const Opacity = ({ data }: AnimationProps) => {
         setTimeMaxValue(timeMaxValue + 1);
         setTimeMinValue(timeMinValue - 1);
     };
-    const onSetCancel = (_cancel: any) => {
+    const onSetCancel = (_cancel: () => void, endTime: number) => {
         setCancel(() => {
-            return _cancel;
+            return [_cancel, endTime];
         });
     };
     const onPlayAnimation = async () => {
         setIsPlaying(true);
         onSetPlay(true);
+        start();
         const effect = object.data.effects[id];
         const [startTime, endTime] = effect.timeLine;
         timeRef.current = setTimeout(() => {
@@ -50,8 +53,9 @@ export const Opacity = ({ data }: AnimationProps) => {
     const onStopAnimation = () => {
         setIsPlaying(false);
         onSetPlay(false);
+        stop();
         clearTimeout(timeRef.current);
-        cancel?.();
+        cancel[0]?.();
         object.set('opacity', 1);
     };
 
@@ -68,6 +72,16 @@ export const Opacity = ({ data }: AnimationProps) => {
     useEffect(() => {
         onSetTimeLine({ object, id, timeMinValue, timeMaxValue });
     }, [timeMinValue, timeMaxValue, id, object]);
+
+    useEffect(() => {
+        if (!cancel) return;
+        if (time * 1000 === cancel[1]) {
+            setIsPlaying(false);
+            cancel[0]?.();
+            object.set('opacity', 1);
+            stop();
+        }
+    }, [time, cancel, object, stop]);
 
     useEffect(() => {
         const effects = object.data.effects.map((effect: EffectProps, index: number) => {
