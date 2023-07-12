@@ -1,9 +1,11 @@
+import { useState } from 'react';
 import css from '../css/Input.module.css';
 import { Tooltip } from './Tooltip';
 
-export const Input = ({ value, onCheck, setValue, isPlaying }: InputProps) => {
+export const Input = ({ value, onCheck, setValue, isPlaying, flag }: InputProps) => {
+    const [change, setChange] = useState(false);
     return (
-        <div className="group flex items-center">
+        <div className="flex items-center">
             <input
                 className={css.input}
                 type="range"
@@ -14,10 +16,14 @@ export const Input = ({ value, onCheck, setValue, isPlaying }: InputProps) => {
                 onChange={(e) => {
                     setValue(e.target.valueAsNumber);
                     onCheck();
+                    setChange(true);
                 }}
+                onMouseOver={() => setChange(true)}
+                onMouseUp={() => setChange(false)}
+                onMouseLeave={() => setChange(false)}
                 disabled={isPlaying}
             />
-            <Tooltip value={value} />
+            <Tooltip value={value} flag={flag} change={change} />
         </div>
     );
 };
