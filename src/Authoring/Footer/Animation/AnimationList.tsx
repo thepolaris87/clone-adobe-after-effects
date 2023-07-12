@@ -29,6 +29,7 @@ export const AnimationList = ({ object, sounds }: { object: fabric.Object; sound
     const timeLineRef = useRef({ time: 0, index: 0 });
     const timeRef = useRef(0);
     const soundIdRef = useRef(0);
+    const [activeObjId, setActiveObjId] = useState<string[]>([]);
     const { start, stop, time } = useTimeCheck();
 
     const onAddEffect = (title: TEffect) => {
@@ -145,10 +146,29 @@ export const AnimationList = ({ object, sounds }: { object: fabric.Object; sound
         });
     }, [time, isPlaying, stop, opacityCancel, object]);
 
+    useEffect(() => {
+        const array = (activeObject as fabric.Group)?._objects;
+        if (!array) setActiveObjId([]);
+        else {
+            const Ids: string[] = [];
+            array.forEach((arr: fabric.Object) => {
+                Ids.push(arr.data.id);
+            });
+            setActiveObjId(Ids);
+        }
+    }, [activeObject]);
+
     return (
         <div
             className="rounded-[8px] mb-4 p-[4px_10px] shadow-[1px_3px_5px_1px_#cdd8dd] cursor-pointer"
-            style={{ backgroundColor: activeObject && activeObject.data.id === object.data.id ? '#dddbdb' : '#ecebeb' }}
+            style={{
+                backgroundColor:
+                    activeObjId && activeObjId.includes(object.data.id)
+                        ? '#dddbdb'
+                        : activeObject && activeObject?.data?.id === object.data.id
+                        ? '#dddbdb'
+                        : '#ecebeb'
+            }}
             onClick={() => {
                 editor?.canvas.setActiveObject(object);
                 editor?.canvas.renderAll();
