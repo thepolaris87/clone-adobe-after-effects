@@ -1,4 +1,4 @@
-import { editorAtom } from '@/atoms/atom';
+import { editorAtom, objectsAtom } from '@/atoms/atom';
 import { activeObjectAtom } from '@/atoms/atom';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { useEffect, useState } from 'react';
@@ -14,6 +14,7 @@ export default function LeftContent() {
     const objects = canvas?.getObjects();
     const [items, setItems] = useState<Object[]>(objects ? objects : []);
     const [indexClick, setIndexClick] = useAtom(indexAtom);
+    const setObjects = useSetAtom(objectsAtom);
 
     useEffect(() => {
         const handleObjectAdded = (e: fabric.IEvent) => {
@@ -41,10 +42,12 @@ export default function LeftContent() {
         if (indexClick) {
             if (objects && objects.length > 0) {
                 const updatedItems = objects ? [...objects].reverse() : [];
+                setObjects(objects);
                 setItems(updatedItems);
                 setIndexClick(false);
             } else {
                 setItems([]);
+                setObjects([]);
                 setIndexClick(false);
             }
         }
