@@ -101,7 +101,13 @@ export const Opacity = ({ data }: AnimationProps) => {
                 </span>
                 <span className="hidden sm:flex">
                     <label className="mr-2">Interval</label>
-                    <input name="interval" className="rounded-sm px-2 w-[80%] shadow-[0_1px_#cdd8dd]" value={interval} onChange={(e) => onChange(e)} />
+                    <input
+                        name="interval"
+                        className="rounded-sm px-2 w-[80%] shadow-[0_1px_#cdd8dd]"
+                        value={interval}
+                        onChange={(e) => onChange(e)}
+                        disabled={isPlay}
+                    />
                 </span>
             </div>
             <Slider

@@ -104,6 +104,7 @@ export const Sound = ({ data }: AnimationProps) => {
                             value={soundId ? soundId : 'Select sound'}
                             onClick={() => setOpen(true)}
                             ref={inputRef}
+                            disabled={isPlay}
                         ></input>
                         <div ref={divRef}>
                             {open && (

@@ -79,9 +79,21 @@ export const Move = ({ data }: AnimationProps) => {
                 </span>
                 <span className="hidden sm:flex">
                     <label className="mr-2">x</label>
-                    <input name="left" className="rounded-sm px-2 mr-3 w-[80%] shadow-[0_1px_#cdd8dd]" value={moveValue.left} onChange={(e) => onChange(e)} />
+                    <input
+                        name="left"
+                        className="rounded-sm px-2 mr-3 w-[80%] shadow-[0_1px_#cdd8dd]"
+                        value={moveValue.left}
+                        onChange={(e) => onChange(e)}
+                        disabled={isPlay}
+                    />
                     <label className="mr-2">y</label>
-                    <input name="top" className="rounded-sm px-2 w-[80%] shadow-[0_1px_#cdd8dd]" value={moveValue.top} onChange={(e) => onChange(e)} />
+                    <input
+                        name="top"
+                        className="rounded-sm px-2 w-[80%] shadow-[0_1px_#cdd8dd]"
+                        value={moveValue.top}
+                        onChange={(e) => onChange(e)}
+                        disabled={isPlay}
+                    />
                 </span>
             </div>
             <Slider

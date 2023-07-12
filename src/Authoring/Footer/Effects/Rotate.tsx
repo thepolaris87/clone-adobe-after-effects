@@ -79,7 +79,13 @@ export const Rotate = ({ data }: AnimationProps) => {
                 </span>
                 <span className="hidden sm:flex justify-end">
                     <label className="mr-2">Angle</label>
-                    <input name="angle" className="rounded-sm px-2 w-[80%] shadow-[0_1px_#cdd8dd]" value={angle} onChange={(e) => onChange(e)} />
+                    <input
+                        name="angle"
+                        className="rounded-sm px-2 w-[80%] shadow-[0_1px_#cdd8dd]"
+                        value={angle}
+                        onChange={(e) => onChange(e)}
+                        disabled={isPlay}
+                    />
                 </span>
             </div>
             <Slider
