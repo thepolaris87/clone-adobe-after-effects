@@ -7,13 +7,15 @@ const list = ['NotoSansKRRegular', 'NanumSquereRoundR', 'NanumSquereRoundB', 'ON
 export default function FontFamily() {
     const editor = useAtomValue(editorAtom);
     const canvas = editor?.canvas;
-    const [isOpen, setIsOpen] = useState(false);
-    const outsideRef = useRef<HTMLDivElement | null>(null);
     const activeObject = useAtomValue(activeObjectAtom);
-    const [font, setFont] = useState('');
+    const outsideRef = useRef<HTMLDivElement | null>(null);
+    const [isOpen, setIsOpen] = useState(false);
+    const [font, setFont] = useState((activeObject as any).fontFamily || 'Times New Roman');
+    
     useEffect(() => {
-        if (!activeObject) return;
         setFont((activeObject as any).fontFamily);
+        canvas?.requestRenderAll();
+        
     }, [activeObject, canvas]);
 
     useEffect(() => {
@@ -30,9 +32,10 @@ export default function FontFamily() {
     }, [outsideRef]);
 
     useEffect(() => {
-        (activeObject as any).set('fontFamily', font);
+        (activeObject as any).set({fontFamily: font});
         canvas?.renderAll();
     }, [font]);
+
 
     return (
         <div className="relative flex items-center">

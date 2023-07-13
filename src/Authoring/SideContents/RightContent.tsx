@@ -1,4 +1,4 @@
-import { useAtom, useAtomValue } from 'jotai';
+import { useAtomValue } from 'jotai';
 import Input from './Components/Input';
 import { activeObjectAtom, editorAtom } from '@/atoms/atom';
 import { useEffect, useState } from 'react';
@@ -23,7 +23,7 @@ type setting = {
 export default function RightContent() {
     const editor = useAtomValue(editorAtom);
     const canvas = editor?.canvas;
-    const [_activeObject, setActiveObject] = useAtom(activeObjectAtom);
+    const _activeObject = useAtomValue(activeObjectAtom);
     const [position, setPosition] = useState<position>({ left: undefined, top: undefined });
     const [size, setSize] = useState<size>({ width: undefined, height: undefined });
     const [scaleValue, setScaleValue] = useState<scale>({ scaleX: undefined, scaleY: undefined });

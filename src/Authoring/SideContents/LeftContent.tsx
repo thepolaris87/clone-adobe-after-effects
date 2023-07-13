@@ -8,13 +8,13 @@ import { indexAtom } from '../Toolbox/atom';
 export default function LeftContent() {
     const editor = useAtomValue(editorAtom);
     const canvas = editor?.canvas;
-    const activeObject: fabric.Object | null = useAtomValue(activeObjectAtom);
-    const setActiveObject = useSetAtom(activeObjectAtom);
-    const [activeSrc, setActiveSrc] = useState('');
     const objects = canvas?.getObjects();
-    const [items, setItems] = useState<Object[]>(objects ? objects : []);
     const [indexClick, setIndexClick] = useAtom(indexAtom);
     const setObjects = useSetAtom(objectsAtom);
+    const setActiveObject = useSetAtom(activeObjectAtom);
+    const activeObject: fabric.Object | null = useAtomValue(activeObjectAtom);
+    const [activeSrc, setActiveSrc] = useState('');
+    const [items, setItems] = useState<Object[]>(objects ? objects : []);
 
     useEffect(() => {
         const handleObjectAdded = (e: fabric.IEvent) => {
