@@ -10,7 +10,6 @@ export default function Group() {
     const editor = useAtomValue(editorAtom);
     const canvas = editor?.canvas;
     const activeObject = useAtomValue(activeObjectAtom);
-    const setObjects = useSetAtom(objectsAtom);
     const setIndexClick = useSetAtom(indexAtom);
 
     const onGroupBtnClick = () => {
@@ -19,8 +18,7 @@ export default function Group() {
             setIndexClick(true);
             //그룹화
             group.set('data', { type: 'group', id: nanoid(), effects: [] });
-            const objects = editor?.add(group);
-            if (objects) setObjects(objects);
+            editor?.add(group);
 
             //기존 개체 삭제
             (activeObject as any)._objects.forEach((obj: fabric.Object) => {
@@ -34,6 +32,7 @@ export default function Group() {
 
             //그룹해제
             (activeObject as any).toActiveSelection();
+            
             canvas?.renderAll();
         }
     };
