@@ -10,7 +10,7 @@ export default function FontFamily() {
     const [isOpen, setIsOpen] = useState(false);
     const outsideRef = useRef<HTMLDivElement | null>(null);
     const activeObject = useAtomValue(activeObjectAtom);
-    const [font, setFont] = useState((activeObject as any).fontFamily);
+    const [font, setFont] = useState('');
     useEffect(() => {
         if (!activeObject) return;
         setFont((activeObject as any).fontFamily);
@@ -33,6 +33,7 @@ export default function FontFamily() {
         (activeObject as any).set('fontFamily', font);
         canvas?.renderAll();
     }, [font]);
+
     return (
         <div className="relative flex items-center">
             <div ref={outsideRef}>
