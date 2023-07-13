@@ -56,6 +56,7 @@ export const AnimationList = ({ object, sounds, start: startFlag, onSetTime, onS
         setOpacityCancel((prev: any) => {
             return [...prev, [_cancel, endTime, object]];
         });
+        totalCancel(_cancel, endTime);
     };
     const onPlay = useCallback(() => {
         const arr: number[] = [];
@@ -104,6 +105,7 @@ export const AnimationList = ({ object, sounds, start: startFlag, onSetTime, onS
         cancel.forEach((_cancel: any) => {
             _cancel?.();
         }); // 실행 중인 애니메이션 취소
+        // 취소 시 여기서 취소
         opacityCancel.forEach((_cancel: any) => {
             _cancel[0]?.();
         }); // opacity 따로 관리
@@ -144,6 +146,7 @@ export const AnimationList = ({ object, sounds, start: startFlag, onSetTime, onS
             setIsPlaying(false);
             onSetTime(isPlaying);
         }
+        // 시간 지나면 여기서 종료
         opacityCancel.forEach((cancel: any) => {
             if (cancel[1] === time * 1000) {
                 cancel[0]?.();

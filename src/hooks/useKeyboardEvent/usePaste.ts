@@ -13,6 +13,7 @@ export default function usePaste() {
         clone.left = (obj.left as number) + 15;
         clone.top = (obj.top as number) + 15;
         editor.canvas.add(clone);
+        editor.canvas.setActiveObject(clone);
         const objects = editor.canvas.getObjects();
         setObjects(objects);
     };
