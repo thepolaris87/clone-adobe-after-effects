@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useRef, useMemo, useState, useEffect, useCallback } from 'react';
 import { getSound } from '@/apis/sol';
 import useApi from '@/hooks/useApi';
 import { useAtomValue } from 'jotai';
@@ -8,20 +8,75 @@ import { AnimationList } from './Animation/AnimationList';
 export const Footer = () => {
     const objects = useAtomValue(objectsAtom);
     const { data } = useApi(getSound);
+    const [start, setStart] = useState<boolean>(false);
+    const [cancel, setCancel] = useState<any>([]);
     const sounds = useMemo(() => data?.filter((sound) => sound.extension === 'mp3'), [data]);
+    const finishRef = useRef({ num: 0, number: 0 });
+
+    const onSetTime = (isPlaying: boolean) => {
+        if (isPlaying) finishRef.current.number += 1;
+        if (finishRef.current.num === finishRef.current.number) setStart(false);
+    };
+    const onSetNum = useCallback(() => {
+        finishRef.current = { num: 0, number: 0 };
+        objects.forEach((object) => {
+            if (object.data.effects.length >= 1) finishRef.current.num += 1;
+        });
+    }, [objects]);
+    const onSetCancel = (_cancel: () => void) => {
+        setCancel((prev: any) => {
+            return [...prev, _cancel];
+        });
+    };
+    const onStop = () => {
+        setStart(false);
+        cancel.forEach((_cancel: () => void) => {
+            _cancel?.();
+        });
+    };
+
+    useEffect(() => {
+        onSetNum();
+    }, [objects, onSetNum]);
 
     return (
         <React.Fragment>
             <div className="flex">
                 <div className="w-full">
-                    <div className="font-[700] mb-2">Animation</div>
+                    <div className="flex items-center mb-2">
+                        <div className="font-[700] mr-3">Animation</div>
+                        {!start ? (
+                            <button
+                                className="bg-[#FD7C7C] w-[60px] text-[white] p-[4px_12px] rounded-[8px] hover:bg-[#FF8484]"
+                                onClick={() => {
+                                    setStart(true);
+                                    finishRef.current.number = 0;
+                                }}
+                            >
+                                Play
+                            </button>
+                        ) : (
+                            <button className="bg-[black] w-[60px] text-[white] p-[4px_12px] rounded-[8px] hover:bg-[#3a3939]" onClick={() => onStop()}>
+                                Stop
+                            </button>
+                        )}
+                    </div>
                     <div className="px-[10px]">
                         {objects.map((object, index) => {
-                            return <AnimationList key={index} object={object} sounds={sounds} />;
+                            return (
+                                <AnimationList
+                                    key={index}
+                                    object={object}
+                                    sounds={sounds}
+                                    start={start}
+                                    onSetTime={onSetTime}
+                                    onSetNum={onSetNum}
+                                    totalCancel={onSetCancel}
+                                />
+                            );
                         })}
                     </div>
                 </div>
-                {/* <div className="w-[55%] font-[700]">TimeLine</div> */}
             </div>
         </React.Fragment>
     );

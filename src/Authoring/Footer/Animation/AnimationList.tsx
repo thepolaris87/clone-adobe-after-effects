@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Move, Scale, Rotate, FadeIn, FadeOut, Opacity, Sound } from '../Effects';
 import { useAtomValue } from 'jotai';
 import { activeObjectAtom, editorAtom } from '@/atoms/atom';
@@ -10,7 +10,7 @@ import { fadeIn, fadeOut, rotate, move, scale, opacity, soundCheck } from '@/uti
 import { useTimeCheck } from '@/hooks/useTimeCheck';
 import { createTimeLine, setTimeLine } from '@/util/helper';
 
-export const AnimationList = ({ object, sounds }: { object: fabric.Object; sounds?: TGetSound[] }) => {
+export const AnimationList = ({ object, sounds, start: startFlag, onSetTime, onSetNum, totalCancel }: AnimationListProps) => {
     const editor = useAtomValue(editorAtom);
     const activeObject = useAtomValue(activeObjectAtom);
     const [dropDown, setDropDown] = useState(false);
@@ -41,6 +41,7 @@ export const AnimationList = ({ object, sounds }: { object: fabric.Object; sound
         setEffect(title);
         setEndTime();
         onCreateTimeLine();
+        onSetNum();
     };
     const onDeleteEffect = (id: number) => {
         const obj = object.get('data');
@@ -49,13 +50,14 @@ export const AnimationList = ({ object, sounds }: { object: fabric.Object; sound
         setUpdate(!update);
         setEndTime();
         onCreateTimeLine();
+        onSetNum();
     };
     const onSetCancel = (_cancel: () => void, endTime: number, object: fabric.Object) => {
         setOpacityCancel((prev: any) => {
             return [...prev, [_cancel, endTime, object]];
         });
     };
-    const onPlay = () => {
+    const onPlay = useCallback(() => {
         const arr: number[] = [];
         setCancel([]);
         setIsPlaying(true);
@@ -87,11 +89,13 @@ export const AnimationList = ({ object, sounds }: { object: fabric.Object; sound
                 setCancel((prev: any) => {
                     return [...prev, _cancel];
                 });
+                totalCancel(_cancel);
             }, startTime * 1000);
             arr.push(timeRef.current);
             timesRef.current = arr;
         });
-    };
+    }, []);
+
     const onStop = () => {
         setIsPlaying(false);
         timesRef.current.forEach((time) => {
@@ -109,6 +113,7 @@ export const AnimationList = ({ object, sounds }: { object: fabric.Object; sound
         setValue(0);
         object.set('opacity', 1);
     };
+
     const onSetPlay = (flag: boolean) => {
         setIsPlay(flag);
     };
@@ -131,12 +136,13 @@ export const AnimationList = ({ object, sounds }: { object: fabric.Object; sound
     }, [inputRef]);
 
     useEffect(() => {
-        if (!isPlaying) return;
+        if (!isPlaying || timeLineRef.current.time === 0) return;
         if (time <= timeLineRef.current.time + 1) setValue(time);
         if (time === timeLineRef.current.time + 1) {
             setValue(0);
             stop();
             setIsPlaying(false);
+            onSetTime(isPlaying);
         }
         opacityCancel.forEach((cancel: any) => {
             if (cancel[1] === time * 1000) {
@@ -144,7 +150,23 @@ export const AnimationList = ({ object, sounds }: { object: fabric.Object; sound
                 object.set('opacity', 1);
             }
         });
-    }, [time, isPlaying, stop, opacityCancel, object]);
+    }, [time, isPlaying, stop, opacityCancel, object, onSetTime]);
+
+    useEffect(() => {
+        if (startFlag) onPlay();
+        else {
+            timesRef.current.forEach((time) => {
+                clearTimeout(time);
+                setIsPlaying(false);
+                setValue(0);
+                stop();
+            });
+        }
+    }, [startFlag, onPlay]);
+
+    useEffect(() => {
+        setEndTime();
+    }, []);
 
     return !activeObjId ? (
         <div
@@ -200,17 +222,20 @@ export const AnimationList = ({ object, sounds }: { object: fabric.Object; sound
                         onChange={(e) => setTimeLine({ e, setValue, timeLineData, object, editor, isPlay, isPlaying })}
                     />
                 )}
-                {object.data.effects.length !== 0 && isPlaying ? (
-                    <button className="bg-[#CC0000] w-[60px] text-[white] p-[4px_12px] rounded-[8px] hover:bg-[#FF6666]" onClick={onStop}>
-                        Stop
-                    </button>
-                ) : (
-                    object.data.effects.length !== 0 && (
-                        <button className="bg-[orange] w-[60px] text-[white] p-[4px_12px] rounded-[8px] hover:bg-[#FFB129]" onClick={onPlay}>
-                            Play
+                <div className="w-[58px] h-[32px]">
+                    {object.data.effects.length !== 0 && isPlaying && !startFlag ? (
+                        <button className="bg-[#CC0000] text-[white] p-[4px_12px] rounded-[8px] hover:bg-[#FF6666]" onClick={onStop}>
+                            Stop
                         </button>
-                    )
-                )}
+                    ) : (
+                        object.data.effects.length !== 0 &&
+                        !startFlag && (
+                            <button className="bg-[orange] text-[white] p-[4px_12px] rounded-[8px] hover:bg-[#FFB129]" onClick={onPlay}>
+                                Play
+                            </button>
+                        )
+                    )}
+                </div>
             </div>
             {transform ? (
                 <div className="p-[3px_1px_3px_10px]">
