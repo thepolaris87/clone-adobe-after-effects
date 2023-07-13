@@ -9,18 +9,22 @@ export default function IndexItems() {
     const setIndexClick = useSetAtom(indexAtom);
 
     const doubleUp = () => {
+        if(!activeObject) return;
         activeObject.bringToFront();
         setIndexClick(true);
     };
     const up = () => {
+        if(!activeObject) return;
         activeObject.bringForward();
         setIndexClick(true);
     };
     const doubleDown = () => {
+        if(!activeObject) return;
         activeObject.sendToBack();
         setIndexClick(true);
     };
     const down = () => {
+        if(!activeObject) return;
         activeObject.sendBackwards();
         setIndexClick(true);
     };

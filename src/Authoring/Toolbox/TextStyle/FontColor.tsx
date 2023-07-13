@@ -2,7 +2,7 @@ import { editorAtom } from '@/atoms/atom';
 import { IconButtonV1 } from '@/components/Button';
 import { useAtomValue } from 'jotai';
 import { useEffect, useRef, useState } from 'react';
-import { BlockPicker, ChromePicker } from 'react-color';
+import { BlockPicker } from 'react-color';
 import { AiOutlineFontColors } from 'react-icons/ai';
 
 export default function FontColor() {
@@ -43,7 +43,7 @@ export default function FontColor() {
                 <AiOutlineFontColors onClick={onButtonClick} />
             </IconButtonV1>
             {isOpen && (
-                <div style={{position: 'absolute'}}>
+                <div style={{ position: 'absolute' }}>
                     <BlockPicker className="z-10 right-[4.2rem] top-[0.5rem]" color={color} onChangeComplete={handleChangeComplete} />
                 </div>
             )}

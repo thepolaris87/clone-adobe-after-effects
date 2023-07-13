@@ -1,7 +1,7 @@
 import { editorAtom } from '@/atoms/atom';
 import { activeObjectAtom } from '@/atoms/atom';
 import { useAtomValue } from 'jotai';
-import { ChangeEvent, InputHTMLAttributes, useEffect, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 import { IoIosAdd, IoIosRemove } from 'react-icons/io';
 
 export default function FontSize() {

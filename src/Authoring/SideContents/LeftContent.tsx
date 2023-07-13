@@ -58,14 +58,9 @@ export default function LeftContent() {
             setActiveSrc('');
         } else {
             if (activeObject.data) {
-                setActiveSrc((activeObject as fabric.Object).data.type === 'image' ? (activeObject as any).getSrc() : (activeObject as any).toDataURL());
+                setActiveSrc((activeObject as any).toDataURL());
             } else {
-                (activeObject as any)._objects &&
-                    setActiveSrc(
-                        (activeObject as any)._objects[0].data.type === 'image'
-                            ? (activeObject as any)._objects[0].getSrc()
-                            : (activeObject as any)._objects[0].toDataURL()
-                    );
+                (activeObject as any)._objects && setActiveSrc((activeObject as any)._objects[0].toDataURL());
             }
         }
     }, [activeObject]);
@@ -130,16 +125,7 @@ export default function LeftContent() {
                                                 {...provided.dragHandleProps}
                                                 onMouseDown={() => selectObject(el)}
                                             >
-                                                <img
-                                                    src={
-                                                        el.data.type === 'image'
-                                                            ? el.getSrc()
-                                                            : el.toDataURL({
-                                                                  format: 'png',
-                                                                  quality: 1
-                                                              })
-                                                    }
-                                                ></img>
+                                                <img src={el.toDataURL()}></img>
                                             </div>
                                         )}
                                     </Draggable>
