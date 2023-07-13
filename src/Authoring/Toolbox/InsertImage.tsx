@@ -1,9 +1,9 @@
 import fabric from '@fabric';
 import { getImage } from '@/apis/sol';
-import { editorAtom, objectsAtom } from '@/atoms/atom';
+import { editorAtom, objectsAtom, stackAtom } from '@/atoms/atom';
 import { IconButtonV1 } from '@/components/Button';
 import useApi from '@/hooks/useApi';
-import { useAtomValue, useSetAtom } from 'jotai';
+import { useAtomValue, useSetAtom, useAtom } from 'jotai';
 import { useMemo, useState } from 'react';
 import { MdImage } from 'react-icons/md';
 import { nanoid } from 'nanoid';
@@ -13,16 +13,25 @@ import { nanoid } from 'nanoid';
 const ImageModal = ({ onClose }: { onClose: () => void }) => {
     const editor = useAtomValue(editorAtom);
     const setObjects = useSetAtom(objectsAtom);
+    const [stack, setStack] = useAtom(stackAtom);
     const { data } = useApi(getImage);
     const list = useMemo(() => data?.filter((img) => !!img.extension && img.imageDivisionCode === '01'), [data]);
 
     const onImageClick = (img: TGetImage) => {
-        fabric.Image.fromURL(`https://sol-api.esls.io/images/D1/${img.imageId}.${img.extension}`, (obj) => {
-            obj.set('data', { type: 'image', id: nanoid(), effects: [] });
-            onClose();
-            const objects = editor?.add(obj);
-            if (objects) setObjects(objects);
-        }, {crossOrigin: 'Anonymous'} );
+        fabric.Image.fromURL(
+            `https://sol-api.esls.io/images/D1/${img.imageId}.${img.extension}`,
+            (obj) => {
+                obj.set('data', { type: 'image', id: nanoid(), effects: [] });
+                onClose();
+                if (!editor) return;
+                const objects = editor.add(obj);
+                if (objects) setObjects(objects);
+                const data = editor.canvas.toObject(['data']);
+                console.log(JSON.stringify(data));
+                setStack([...stack, JSON.stringify(data)]);
+            },
+            { crossOrigin: 'Anonymous' }
+        );
     };
 
     // const cachedImage = useMemo(
