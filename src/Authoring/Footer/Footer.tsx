@@ -28,6 +28,11 @@ export const Footer = () => {
             return [...prev, _cancel];
         });
     };
+    const onPlay = () => {
+        if (finishRef.current.num === 0) return;
+        setStart(true);
+        finishRef.current.number = 0;
+    };
     const onStop = () => {
         setStart(false);
         cancel.forEach((_cancel: () => void) => {
@@ -45,20 +50,16 @@ export const Footer = () => {
                 <div className="w-full">
                     <div className="flex items-center mb-2">
                         <div className="font-[700] mr-3">Animation</div>
-                        {!start ? (
-                            <button
-                                className="bg-[#FD7C7C] w-[60px] text-[white] p-[4px_12px] rounded-[8px] hover:bg-[#FF8484]"
-                                onClick={() => {
-                                    setStart(true);
-                                    finishRef.current.number = 0;
-                                }}
-                            >
+                        {!start && objects.length !== 0 ? (
+                            <button className="bg-[#FD7C7C] w-[60px] text-[white] p-[4px_12px] rounded-[8px] hover:bg-[#FF8484]" onClick={() => onPlay()}>
                                 Play
                             </button>
                         ) : (
-                            <button className="bg-[black] w-[60px] text-[white] p-[4px_12px] rounded-[8px] hover:bg-[#3a3939]" onClick={() => onStop()}>
-                                Stop
-                            </button>
+                            objects.length !== 0 && (
+                                <button className="bg-[black] w-[60px] text-[white] p-[4px_12px] rounded-[8px] hover:bg-[#3a3939]" onClick={() => onStop()}>
+                                    Stop
+                                </button>
+                            )
                         )}
                     </div>
                     <div className="px-[10px]">
