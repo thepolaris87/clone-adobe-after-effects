@@ -5,19 +5,20 @@ import useScale from './useKeyboardEvent/useScale';
 import useSave from './useKeyboardEvent/useSave';
 import useCopy from './useKeyboardEvent/useCopy';
 import usePaste from './useKeyboardEvent/usePaste';
+import { useCut } from './useKeyboardEvent/useCut';
 import { editorAtom } from '@/atoms/atom';
 import { useAtomValue } from 'jotai';
 import Editor from '@/Editor/Editor';
 
 export default function useKeyboardEvent() {
     const editor = useAtomValue(editorAtom);
-    // const activeObject = useAtomValue(activeObjectAtom);
     const { onDelete } = useDelete();
     const { onMove } = useMove();
     const { onScale } = useScale();
     const { onSave } = useSave();
     const { onCopy } = useCopy();
     const { onPaste } = usePaste();
+    const { onCut } = useCut();
     const arrows = useMemo(() => ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'], []);
     const scales = useMemo(() => ['Minus', 'Equal'], []);
 
@@ -33,8 +34,9 @@ export default function useKeyboardEvent() {
                 e.preventDefault();
                 onSave(editor as Editor);
             }
+            if ((metaKey || ctrlKey) && code === 'KeyX') onCut(editor as Editor);
         },
-        [onDelete, onCopy, onMove, onScale, onSave, onPaste, arrows, scales, editor]
+        [onDelete, onCopy, onMove, onScale, onSave, onPaste, onCut, arrows, scales, editor]
     );
 
     useEffect(() => {
