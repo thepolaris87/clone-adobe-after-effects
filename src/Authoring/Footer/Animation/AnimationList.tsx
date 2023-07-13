@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Move, Scale, Rotate, FadeIn, FadeOut, Opacity, Sound } from '../Effects';
 import { useAtomValue } from 'jotai';
-import { activeObjectAtom, editorAtom } from '@/atoms/atom';
+import { activeObjectAtom, editorAtom, flagAtom } from '@/atoms/atom';
 import { MdChevronRight, MdKeyboardArrowDown } from 'react-icons/md';
 import { BiCaretDownSquare } from 'react-icons/bi';
 import { effects } from '../Effects/Effect';
@@ -10,9 +10,10 @@ import { fadeIn, fadeOut, rotate, move, scale, opacity, soundCheck } from '@/uti
 import { useTimeCheck } from '@/hooks/useTimeCheck';
 import { createTimeLine, setTimeLine } from '@/util/helper';
 
-export const AnimationList = ({ object, sounds, start: startFlag, onSetTime, onSetNum, totalCancel }: AnimationListProps) => {
+export const AnimationList = ({ object, sounds, onSetTime, onSetNum, totalCancel }: AnimationListProps) => {
     const editor = useAtomValue(editorAtom);
     const activeObject = useAtomValue(activeObjectAtom);
+    const flag = useAtomValue(flagAtom);
     const [dropDown, setDropDown] = useState(false);
     const [transform, setTransForm] = useState(true);
     const [isPlaying, setIsPlaying] = useState(false); // 전체 실행
@@ -56,6 +57,7 @@ export const AnimationList = ({ object, sounds, start: startFlag, onSetTime, onS
         setOpacityCancel((prev: any) => {
             return [...prev, [_cancel, endTime, object]];
         });
+        totalCancel(_cancel, endTime);
     };
     const onPlay = useCallback(() => {
         const arr: number[] = [];
@@ -100,13 +102,13 @@ export const AnimationList = ({ object, sounds, start: startFlag, onSetTime, onS
         setIsPlaying(false);
         timesRef.current.forEach((time) => {
             clearTimeout(time);
-        }); // 아직 실행되지 않은 애니메이션 취소
+        });
         cancel.forEach((_cancel: any) => {
             _cancel?.();
-        }); // 실행 중인 애니메이션 취소
+        });
         opacityCancel.forEach((_cancel: any) => {
             _cancel[0]?.();
-        }); // opacity 따로 관리
+        });
         clearTimeout(soundIdRef.current);
         _sound?.stop();
         stop();
@@ -153,7 +155,7 @@ export const AnimationList = ({ object, sounds, start: startFlag, onSetTime, onS
     }, [time, isPlaying, stop, opacityCancel, object, onSetTime]);
 
     useEffect(() => {
-        if (startFlag) onPlay();
+        if (flag) onPlay();
         else {
             timesRef.current.forEach((time) => {
                 clearTimeout(time);
@@ -162,7 +164,7 @@ export const AnimationList = ({ object, sounds, start: startFlag, onSetTime, onS
                 stop();
             });
         }
-    }, [startFlag, onPlay]);
+    }, [flag, onPlay]);
 
     useEffect(() => {
         setEndTime();
@@ -223,13 +225,13 @@ export const AnimationList = ({ object, sounds, start: startFlag, onSetTime, onS
                     />
                 )}
                 <div className="w-[58px] h-[32px]">
-                    {object.data.effects.length !== 0 && isPlaying && !startFlag ? (
+                    {object.data.effects.length !== 0 && isPlaying && !flag ? (
                         <button className="bg-[#CC0000] text-[white] p-[4px_12px] rounded-[8px] hover:bg-[#FF6666]" onClick={onStop}>
                             Stop
                         </button>
                     ) : (
                         object.data.effects.length !== 0 &&
-                        !startFlag && (
+                        !flag && (
                             <button className="bg-[orange] text-[white] p-[4px_12px] rounded-[8px] hover:bg-[#FFB129]" onClick={onPlay}>
                                 Play
                             </button>

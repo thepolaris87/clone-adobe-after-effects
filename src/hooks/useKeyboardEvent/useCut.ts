@@ -3,7 +3,7 @@ import { cloneAtom } from '@/atoms/atom';
 import { useSetAtom } from 'jotai';
 import { indexAtom } from '@/Authoring/Toolbox/atom';
 
-export function useCut() {
+export default function useCut() {
     const setClone = useSetAtom(cloneAtom);
     const setIndex = useSetAtom(indexAtom);
 

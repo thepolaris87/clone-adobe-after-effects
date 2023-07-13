@@ -17,7 +17,6 @@ export const FadeIn = ({ data }: AnimationProps) => {
     const [timeMaxValue, setTimeMaxValue] = useState(effect.timeLine[1]);
     const [cancel, setCancel] = useState<any>();
     const timeRef = useRef(0);
-    9;
 
     const onCheckRange = () => {
         setEndTime();

@@ -1,14 +1,16 @@
 import { useState } from 'react';
 import { Input } from './Input';
 import { useAtomValue } from 'jotai';
-import { activeObjectAtom } from '@/atoms/atom';
+import { activeObjectAtom, flagAtom } from '@/atoms/atom';
 
 export const Slider = ({ timeMinValue, timeMaxValue, setTimeMaxValue, setTimeMinValue, onCheckRange, objectId, isPlaying }: SliderProps) => {
     const activeObj = useAtomValue(activeObjectAtom);
+    const playFlag = useAtomValue(flagAtom);
     const [flag, setFlag] = useState(false);
     const [position, setPosition] = useState(0);
 
     const onMouseMove = (e: React.MouseEvent) => {
+        if (isPlaying || playFlag) return;
         e.stopPropagation();
         if (!flag) return;
         const num = e.screenX >= 1300 ? 10 : 5;

@@ -9,3 +9,5 @@ export const objectsAtom = atom<fabric.Object[]>([]);
 export const cloneAtom = atom<fabric.Object[] | null>(null);
 
 export const activeObjectAtom = atom<fabric.Object | null>(null);
+
+export const flagAtom = atom<boolean>(false);
