@@ -11,12 +11,13 @@ import { move } from '@/util';
 export const Move = ({ data }: AnimationProps) => {
     const { object, id, onDeleteEffect, isPlay, setEndTime, onSetPlay, onCreateTimeLine } = data;
     const editor = useAtomValue(editorAtom);
+    const effect = object.data.effects[id];
     const [cancel, setCancel] = useState<any>();
     const [isPlaying, setIsPlaying] = useState(false);
-    const [moveValue, setMoveValue] = useState({ top: object.top, left: object.left });
+    const [moveValue, setMoveValue] = useState({ top: effect.option.top, left: effect.option.left });
     const [originValue, setOriginValue] = useState({ top: 0, left: 0 });
-    const [timeMinValue, setTimeMinValue] = useState(0);
-    const [timeMaxValue, setTimeMaxValue] = useState(100);
+    const [timeMinValue, setTimeMinValue] = useState(effect.timeLine[0]);
+    const [timeMaxValue, setTimeMaxValue] = useState(effect.timeLine[1]);
     const timeRef = useRef(0);
 
     const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -78,9 +79,21 @@ export const Move = ({ data }: AnimationProps) => {
                 </span>
                 <span className="hidden sm:flex">
                     <label className="mr-2">x</label>
-                    <input name="left" className="rounded-sm px-2 mr-3 w-[80%] shadow-[0_1px_#cdd8dd]" value={moveValue.left} onChange={(e) => onChange(e)} />
+                    <input
+                        name="left"
+                        className="rounded-sm px-2 mr-3 w-[80%] shadow-[0_1px_#cdd8dd]"
+                        value={moveValue.left}
+                        onChange={(e) => onChange(e)}
+                        disabled={isPlay}
+                    />
                     <label className="mr-2">y</label>
-                    <input name="top" className="rounded-sm px-2 w-[80%] shadow-[0_1px_#cdd8dd]" value={moveValue.top} onChange={(e) => onChange(e)} />
+                    <input
+                        name="top"
+                        className="rounded-sm px-2 w-[80%] shadow-[0_1px_#cdd8dd]"
+                        value={moveValue.top}
+                        onChange={(e) => onChange(e)}
+                        disabled={isPlay}
+                    />
                 </span>
             </div>
             <Slider

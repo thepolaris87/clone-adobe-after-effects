@@ -11,12 +11,13 @@ import { rotate } from '@/util';
 export const Rotate = ({ data }: AnimationProps) => {
     const { object, id, onDeleteEffect, isPlay, setEndTime, onSetPlay, onCreateTimeLine } = data;
     const editor = useAtomValue(editorAtom);
+    const effect = object.data.effects[id];
     const [cancel, setCancel] = useState<any>();
     const [isPlaying, setIsPlaying] = useState(false);
-    const [angle, setAngle] = useState(object.angle);
+    const [angle, setAngle] = useState(effect.option.angle);
     const [originValue, setOriginValue] = useState(0);
-    const [timeMinValue, setTimeMinValue] = useState(0);
-    const [timeMaxValue, setTimeMaxValue] = useState(100);
+    const [timeMinValue, setTimeMinValue] = useState(effect.timeLine[0]);
+    const [timeMaxValue, setTimeMaxValue] = useState(effect.timeLine[1]);
     const timeRef = useRef(0);
 
     const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -78,7 +79,13 @@ export const Rotate = ({ data }: AnimationProps) => {
                 </span>
                 <span className="hidden sm:flex justify-end">
                     <label className="mr-2">Angle</label>
-                    <input name="angle" className="rounded-sm px-2 w-[80%] shadow-[0_1px_#cdd8dd]" value={angle} onChange={(e) => onChange(e)} />
+                    <input
+                        name="angle"
+                        className="rounded-sm px-2 w-[80%] shadow-[0_1px_#cdd8dd]"
+                        value={angle}
+                        onChange={(e) => onChange(e)}
+                        disabled={isPlay}
+                    />
                 </span>
             </div>
             <Slider

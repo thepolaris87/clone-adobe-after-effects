@@ -78,6 +78,6 @@ type PlayAnimationProps = {
     duration?: number;
 };
 
-type InputProps = { value: number; onCheck: () => void; setValue: (value: number) => void; isPlaying: boolean };
+type InputProps = { value: number; onCheck: () => void; setValue: (value: number) => void; isPlaying: boolean; flag: boolean };
 
 type TimeLineProps = { object: fabric.Object; id: number; timeMinValue: number; timeMaxValue: number };

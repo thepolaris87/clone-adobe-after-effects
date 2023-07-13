@@ -11,10 +11,11 @@ import { fadeOut } from '@/util';
 export const FadeOut = ({ data }: AnimationProps) => {
     const { object, id, onDeleteEffect, isPlay, setEndTime, onSetPlay } = data;
     const editor = useAtomValue(editorAtom);
+    const effect = object.data.effects[id];
     const [cancel, setCancel] = useState<any>();
     const [isPlaying, setIsPlaying] = useState(false);
-    const [timeMinValue, setTimeMinValue] = useState(0);
-    const [timeMaxValue, setTimeMaxValue] = useState(100);
+    const [timeMinValue, setTimeMinValue] = useState(effect.timeLine[0]);
+    const [timeMaxValue, setTimeMaxValue] = useState(effect.timeLine[1]);
     const timeRef = useRef(0);
 
     const onCheckRange = () => {

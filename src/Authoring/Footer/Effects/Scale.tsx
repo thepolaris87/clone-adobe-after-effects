@@ -11,12 +11,13 @@ import { scale } from '@/util';
 export const Scale = ({ data }: AnimationProps) => {
     const { object, id, onDeleteEffect, isPlay, setEndTime, onSetPlay, onCreateTimeLine } = data;
     const editor = useAtomValue(editorAtom);
+    const effect = object.data.effects[id];
     const [isPlaying, setIsPlaying] = useState(false);
     const [cancel, setCancel] = useState<any>();
-    const [scaleValue, setScaleValue] = useState({ scaleX: object.scaleX, scaleY: object.scaleY });
+    const [scaleValue, setScaleValue] = useState({ scaleX: effect.option.scaleX, scaleY: effect.option.scaleY });
     const [originValue, setOriginValue] = useState({ scaleX: 0, scaleY: 0 });
-    const [timeMinValue, setTimeMinValue] = useState(0);
-    const [timeMaxValue, setTimeMaxValue] = useState(100);
+    const [timeMinValue, setTimeMinValue] = useState(effect.timeLine[0]);
+    const [timeMaxValue, setTimeMaxValue] = useState(effect.timeLine[1]);
     const timeRef = useRef(0);
 
     const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -83,9 +84,16 @@ export const Scale = ({ data }: AnimationProps) => {
                         className="rounded-sm px-2 w-[80%] shadow-[0_1px_#cdd8dd] mr-3"
                         value={scaleValue.scaleX}
                         onChange={(e) => onChange(e)}
+                        disabled={isPlay}
                     />
                     <label className="mr-2">y</label>
-                    <input name="scaleY" className="rounded-sm px-2 w-[80%] shadow-[0_1px_#cdd8dd]" value={scaleValue.scaleY} onChange={(e) => onChange(e)} />
+                    <input
+                        name="scaleY"
+                        className="rounded-sm px-2 w-[80%] shadow-[0_1px_#cdd8dd]"
+                        value={scaleValue.scaleY}
+                        onChange={(e) => onChange(e)}
+                        disabled={isPlay}
+                    />
                 </span>
             </div>
             <Slider
