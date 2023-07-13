@@ -29,6 +29,15 @@ type AnimationProps = {
     };
 };
 
+type AnimationListProps = {
+    object: fabric.Object;
+    sounds?: TGetSound[];
+    start: boolean;
+    onSetTime: (value: boolean) => void;
+    onSetNum: () => void;
+    totalCancel: (value: () => void) => void;
+};
+
 type TimeLineDataProps = {
     key: string;
     t1: number;
