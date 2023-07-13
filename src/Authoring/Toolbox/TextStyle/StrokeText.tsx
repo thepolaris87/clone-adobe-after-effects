@@ -3,7 +3,7 @@ import { IconButtonV1 } from '@/components/Button';
 import { useAtomValue } from 'jotai';
 import { MdBorderColor } from 'react-icons/md';
 import { useEffect, useRef, useState } from 'react';
-import { BlockPicker, ChromePicker } from 'react-color';
+import { BlockPicker } from 'react-color';
 
 export default function StrokeText() {
     const editor = useAtomValue(editorAtom);
@@ -43,7 +43,7 @@ export default function StrokeText() {
                 <MdBorderColor />
             </IconButtonV1>
             {isOpen && (
-                <div style={{position: 'absolute'}}>
+                <div style={{ position: 'absolute' }}>
                     <BlockPicker className="z-10 right-[4.2rem] top-[0.5rem]" color={color} onChangeComplete={handleChangeComplete} />
                 </div>
             )}

@@ -5,7 +5,6 @@ import { useAtomValue, useSetAtom } from 'jotai';
 import { LiaObjectGroup, LiaObjectUngroup } from 'react-icons/lia';
 import { nanoid } from 'nanoid';
 import { indexAtom } from './atom';
-import { useEffect } from 'react';
 
 export default function Group() {
     const editor = useAtomValue(editorAtom);
