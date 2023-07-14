@@ -14,7 +14,7 @@ export default function LeftContent() {
     const setActiveObject = useSetAtom(activeObjectAtom);
     const activeObject: fabric.Object | null = useAtomValue(activeObjectAtom);
     const [activeSrc, setActiveSrc] = useState('');
-    const [items, setItems] = useState<Object[]>(objects ? objects : []);
+    const [items, setItems] = useState<object[]>(objects ? objects : []);
 
     useEffect(() => {
         const handleObjectAdded = (e: fabric.IEvent) => {
