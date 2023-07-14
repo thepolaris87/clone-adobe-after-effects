@@ -5,7 +5,9 @@ import useScale from './useKeyboardEvent/useScale';
 import useSave from './useKeyboardEvent/useSave';
 import useCopy from './useKeyboardEvent/useCopy';
 import usePaste from './useKeyboardEvent/usePaste';
-import { useCut } from './useKeyboardEvent/useCut';
+import useCut from './useKeyboardEvent/useCut';
+import useAlign from './useKeyboardEvent/useAlign';
+import useUndo from './useKeyboardEvent/useUndo';
 import { editorAtom } from '@/atoms/atom';
 import { useAtomValue } from 'jotai';
 import Editor from '@/Editor/Editor';
@@ -19,12 +21,14 @@ export default function useKeyboardEvent() {
     const { onCopy } = useCopy();
     const { onPaste } = usePaste();
     const { onCut } = useCut();
+    const { onAlign } = useAlign();
+    const { onUndo } = useUndo();
     const arrows = useMemo(() => ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'], []);
     const scales = useMemo(() => ['Minus', 'Equal'], []);
 
     const keyEventHandler = useCallback(
         (e: KeyboardEvent) => {
-            const { ctrlKey, metaKey, code } = e;
+            const { ctrlKey, metaKey, shiftKey, code } = e;
             if (code === 'Delete') onDelete(editor as Editor);
             if ((metaKey || ctrlKey) && code === 'KeyC') onCopy(editor as Editor);
             if ((metaKey || ctrlKey) && code === 'KeyV') onPaste(editor as Editor);
@@ -35,8 +39,10 @@ export default function useKeyboardEvent() {
                 onSave(editor as Editor);
             }
             if ((metaKey || ctrlKey) && code === 'KeyX') onCut(editor as Editor);
+            if ((metaKey || ctrlKey) && shiftKey && code === 'Backslash') onAlign(editor as Editor);
+            if ((metaKey || ctrlKey) && code === 'KeyZ') onUndo(editor as Editor);
         },
-        [onDelete, onCopy, onMove, onScale, onSave, onPaste, onCut, arrows, scales, editor]
+        [onDelete, onCopy, onMove, onScale, onSave, onPaste, onCut, onAlign, onUndo, arrows, scales, editor]
     );
 
     useEffect(() => {
