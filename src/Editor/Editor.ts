@@ -14,7 +14,7 @@ export default class Editor {
         const data = this.canvas?.toObject(['data', ...(propertiesToInclude ?? [])]);
         return data;
     }
-    async asyncLoad(json: string) {
+    async asyncLoad(json: string | []) {
         return new Promise((resolve) => this.canvas.loadFromJSON(json, resolve));
     }
     load(json: string) {

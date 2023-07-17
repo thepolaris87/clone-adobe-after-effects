@@ -2,7 +2,7 @@ import { editorAtom } from '@/atoms/atom';
 import StrokeText from './StrokeText';
 import StrokeWidth from './StrokeWidth';
 import { useAtom, useAtomValue } from 'jotai';
-import { activeObjectAtom } from '@/atoms/atom';
+import { activeObjectAtom, stackAtom } from '@/atoms/atom';
 import FontSize from './FontSize';
 import FontColor from './FontColor';
 import FontFamily from './FontFamily';
@@ -13,6 +13,7 @@ export default function Style() {
     const editor = useAtomValue(editorAtom);
     const canvas = editor?.canvas;
     const [activeObject, setActiveObject] = useAtom(activeObjectAtom);
+    const [stack, setStack] = useAtom(stackAtom);
 
     useEffect(() => {
         const handleObjectUpdate = () => {
@@ -20,24 +21,22 @@ export default function Style() {
             if (!active) return;
             setActiveObject(active);
         };
-
         const handleObjectModified = () => {
             const active = canvas?.getActiveObject() as fabric.Object;
             if (!active) return;
+            const data = canvas?.toObject(['data']);
+            setStack([...stack, JSON.stringify(data)]);
             setActiveObject(active);
         };
-
         const handleSelectionCreated = () => {
             const active = canvas?.getActiveObject() as fabric.Object;
             if (!active) return;
             setActiveObject(active);
         };
-
         const handleSelectionUpdated = (e: fabric.IEvent) => {
             if (!e.selected) return;
             setActiveObject(e.selected[0]);
         };
-
         const handleSelectionCleared = () => {
             setActiveObject(null);
         };
@@ -59,7 +58,7 @@ export default function Style() {
                 canvas.off('selection:cleared', handleSelectionCleared);
             }
         };
-    }, [canvas]);
+    }, [canvas, stack, setActiveObject, setStack]);
 
     return (
         <>

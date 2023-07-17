@@ -96,7 +96,7 @@ export const AnimationList = ({ object, sounds, onSetTime, onSetNum, totalCancel
             arr.push(timeRef.current);
             timesRef.current = arr;
         });
-    }, []);
+    }, [object, editor]);
 
     const onStop = () => {
         setIsPlaying(false);
@@ -164,7 +164,7 @@ export const AnimationList = ({ object, sounds, onSetTime, onSetNum, totalCancel
                 stop();
             });
         }
-    }, [flag, onPlay]);
+    }, [flag, onPlay, object]);
 
     useEffect(() => {
         setEndTime();

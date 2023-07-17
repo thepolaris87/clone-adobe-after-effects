@@ -51,7 +51,7 @@ export default function LeftContent() {
                 setIndexClick(false);
             }
         }
-    }, [objects]);
+    }, [objects, indexClick, setIndexClick, setObjects]);
 
     useEffect(() => {
         if (!activeObject) {
@@ -111,12 +111,11 @@ export default function LeftContent() {
                         <div className="h-[350px] overflow-y-auto py-5" ref={provided.innerRef} {...provided.droppableProps}>
                             {[...items].map((el: any, i: number) => {
                                 return (
-                                    <Draggable key={el.data.id} draggableId={el.data.id} index={i}>
+                                    <Draggable key={String(i)} draggableId={String(i)} index={i}>
                                         {(provided) => (
                                             <div
-                                                key={el.data.id}
                                                 className={`flex bg-white w-full h-12 mt-2 rounded-md justify-center px-2 ${
-                                                    el === activeObject || (activeObject as any)?._objects?.some((i: fabric.Object) => i === el)
+                                                    el === activeObject || (activeObject as fabric.Group)?._objects?.some((i: fabric.Object) => i === el)
                                                         ? 'border-blue-300 border-4'
                                                         : ''
                                                 }`}
@@ -131,6 +130,7 @@ export default function LeftContent() {
                                     </Draggable>
                                 );
                             })}
+                            {provided.placeholder}
                         </div>
                     )}
                 </Droppable>

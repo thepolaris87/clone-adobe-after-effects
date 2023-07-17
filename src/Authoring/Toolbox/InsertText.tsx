@@ -16,8 +16,8 @@ export default function InsertText() {
         if (!editor) return;
         const objects = editor.add(text);
         if (objects) setObjects(objects);
-        // const data = editor.canvas.toObject(['data']);
-        // setStack([...stack, JSON.stringify(data)]);
+        const data = editor.canvas.toObject(['data']);
+        setStack([...stack, JSON.stringify(data)]);
     };
 
     return (

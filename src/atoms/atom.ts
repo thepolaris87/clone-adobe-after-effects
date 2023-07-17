@@ -13,3 +13,5 @@ export const activeObjectAtom = atom<fabric.Object | null>(null);
 export const flagAtom = atom<boolean>(false);
 
 export const stackAtom = atom<string[]>([]);
+
+export const newStackAtom = atom<string[]>([]);

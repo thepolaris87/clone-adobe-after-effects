@@ -27,7 +27,6 @@ const ImageModal = ({ onClose }: { onClose: () => void }) => {
                 const objects = editor.add(obj);
                 if (objects) setObjects(objects);
                 const data = editor.canvas.toObject(['data']);
-                console.log(JSON.stringify(data));
                 setStack([...stack, JSON.stringify(data)]);
             },
             { crossOrigin: 'Anonymous' }

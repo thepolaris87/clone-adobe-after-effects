@@ -8,6 +8,7 @@ import usePaste from './useKeyboardEvent/usePaste';
 import useCut from './useKeyboardEvent/useCut';
 import useAlign from './useKeyboardEvent/useAlign';
 import useUndo from './useKeyboardEvent/useUndo';
+import { useRedo } from './useKeyboardEvent/useRedo';
 import { editorAtom } from '@/atoms/atom';
 import { useAtomValue } from 'jotai';
 import Editor from '@/Editor/Editor';
@@ -23,6 +24,7 @@ export default function useKeyboardEvent() {
     const { onCut } = useCut();
     const { onAlign } = useAlign();
     const { onUndo } = useUndo();
+    const { onRedo } = useRedo();
     const arrows = useMemo(() => ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'], []);
     const scales = useMemo(() => ['Minus', 'Equal'], []);
 
@@ -30,19 +32,19 @@ export default function useKeyboardEvent() {
         (e: KeyboardEvent) => {
             const { ctrlKey, metaKey, shiftKey, code } = e;
             if (code === 'Delete') onDelete(editor as Editor);
-            if ((metaKey || ctrlKey) && code === 'KeyC') onCopy(editor as Editor);
-            if ((metaKey || ctrlKey) && code === 'KeyV') onPaste(editor as Editor);
-            if (arrows.includes(code)) onMove(code, editor as Editor);
-            if (scales.includes(code)) onScale(code, editor as Editor);
-            if ((metaKey || ctrlKey) && code === 'KeyS') {
+            else if ((metaKey || ctrlKey) && code === 'KeyC') onCopy(editor as Editor);
+            else if ((metaKey || ctrlKey) && code === 'KeyV') onPaste(editor as Editor);
+            else if (arrows.includes(code)) onMove(code, editor as Editor);
+            else if (scales.includes(code)) onScale(code, editor as Editor);
+            else if ((metaKey || ctrlKey) && code === 'KeyS') {
                 e.preventDefault();
                 onSave(editor as Editor);
-            }
-            if ((metaKey || ctrlKey) && code === 'KeyX') onCut(editor as Editor);
-            if ((metaKey || ctrlKey) && shiftKey && code === 'Backslash') onAlign(editor as Editor);
-            if ((metaKey || ctrlKey) && code === 'KeyZ') onUndo(editor as Editor);
+            } else if ((metaKey || ctrlKey) && code === 'KeyX') onCut(editor as Editor);
+            else if ((metaKey || ctrlKey) && shiftKey && code === 'Backslash') onAlign(editor as Editor);
+            else if ((metaKey || ctrlKey) && shiftKey && code === 'KeyZ') onRedo(editor as Editor);
+            else if ((metaKey || ctrlKey) && code === 'KeyZ') onUndo(editor as Editor);
         },
-        [onDelete, onCopy, onMove, onScale, onSave, onPaste, onCut, onAlign, onUndo, arrows, scales, editor]
+        [onDelete, onCopy, onMove, onScale, onSave, onPaste, onCut, onAlign, onUndo, onRedo, arrows, scales, editor]
     );
 
     useEffect(() => {
