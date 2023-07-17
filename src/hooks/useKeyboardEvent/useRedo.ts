@@ -3,7 +3,7 @@ import { useAtomValue, useSetAtom } from 'jotai';
 import { newStackAtom, stackAtom } from '@/atoms/atom';
 import { indexAtom } from '@/Authoring/Toolbox/atom';
 
-export function useRedo() {
+export const useRedo = () => {
     const newStack = useAtomValue(newStackAtom);
     const stack = useAtomValue(stackAtom);
     const setIndex = useSetAtom(indexAtom);
@@ -17,4 +17,4 @@ export function useRedo() {
         }
     };
     return { onRedo };
-}
+};

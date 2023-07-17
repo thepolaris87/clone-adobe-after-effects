@@ -3,7 +3,7 @@ import { useAtomValue, useSetAtom, useAtom } from 'jotai';
 import { stackAtom, newStackAtom } from '@/atoms/atom';
 import { indexAtom } from '@/Authoring/Toolbox/atom';
 
-export default function useUndo() {
+export const useUndo = () => {
     const stack = useAtomValue(stackAtom);
     const [newStack, setNewStack] = useAtom(newStackAtom);
     const setIndex = useSetAtom(indexAtom);
@@ -17,4 +17,4 @@ export default function useUndo() {
         setIndex(true);
     };
     return { onUndo };
-}
+};

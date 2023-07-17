@@ -3,7 +3,7 @@ import { cloneAtom, objectsAtom } from '@/atoms/atom';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { nanoid } from 'nanoid';
 
-export default function usePaste() {
+export const usePaste = () => {
     const clones = useAtomValue(cloneAtom);
     const setObjects = useSetAtom(objectsAtom);
 
@@ -25,4 +25,4 @@ export default function usePaste() {
     };
 
     return { onPaste };
-}
+};

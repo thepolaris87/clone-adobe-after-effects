@@ -3,7 +3,7 @@ import { useSetAtom } from 'jotai';
 import { activeObjectAtom, objectsAtom } from '@/atoms/atom';
 import { indexAtom } from '@/Authoring/Toolbox/atom';
 
-export default function useDelete() {
+export const useDelete = () => {
     const setObjects = useSetAtom(objectsAtom);
     const setIndex = useSetAtom(indexAtom);
     const setActiveObject = useSetAtom(activeObjectAtom);
@@ -19,4 +19,4 @@ export default function useDelete() {
     };
 
     return { onDelete };
-}
+};

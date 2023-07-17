@@ -1,6 +1,6 @@
 import Editor from '@/Editor/Editor';
 
-export default function useAlign() {
+export const useAlign = () => {
     const onAlign = (editor: Editor) => {
         const objects = editor.canvas.getActiveObject();
         if (!objects) return;
@@ -13,4 +13,4 @@ export default function useAlign() {
         });
     };
     return { onAlign };
-}
+};

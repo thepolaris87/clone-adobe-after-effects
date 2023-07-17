@@ -1,6 +1,6 @@
 import Editor from '@/Editor/Editor';
 
-export default function useMove() {
+export const useMove = () => {
     const onMove = (code: string, editor: Editor) => {
         const object = editor.canvas.getActiveObject();
         if (!object) return;
@@ -12,4 +12,4 @@ export default function useMove() {
     };
 
     return { onMove };
-}
+};

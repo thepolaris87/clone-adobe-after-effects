@@ -1,17 +1,8 @@
 import { useCallback, useEffect, useMemo } from 'react';
-import useDelete from './useKeyboardEvent/useDelete';
-import useMove from './useKeyboardEvent/useMove';
-import useScale from './useKeyboardEvent/useScale';
-import useSave from './useKeyboardEvent/useSave';
-import useCopy from './useKeyboardEvent/useCopy';
-import usePaste from './useKeyboardEvent/usePaste';
-import useCut from './useKeyboardEvent/useCut';
-import useAlign from './useKeyboardEvent/useAlign';
-import useUndo from './useKeyboardEvent/useUndo';
-import { useRedo } from './useKeyboardEvent/useRedo';
-import { editorAtom } from '@/atoms/atom';
 import { useAtomValue } from 'jotai';
+import { editorAtom } from '@/atoms/atom';
 import Editor from '@/Editor/Editor';
+import { useAlign, useCopy, useCut, useDelete, useMove, usePaste, useRedo, useUndo, useSave, useScale } from './useKeyboardEvent/index';
 
 export default function useKeyboardEvent() {
     const editor = useAtomValue(editorAtom);

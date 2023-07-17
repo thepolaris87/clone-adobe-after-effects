@@ -2,7 +2,7 @@ import Editor from '@/Editor/Editor';
 import { cloneAtom } from '@/atoms/atom';
 import { useSetAtom } from 'jotai';
 
-export default function useCopy() {
+export const useCopy = () => {
     const setClone = useSetAtom(cloneAtom);
 
     const onCopy = (editor: Editor) => {
@@ -11,4 +11,4 @@ export default function useCopy() {
     };
 
     return { onCopy };
-}
+};

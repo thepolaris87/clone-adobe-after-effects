@@ -1,6 +1,6 @@
 import Editor from '@/Editor/Editor';
 
-export default function useScale() {
+export const useScale = () => {
     const onScale = (code: string, editor: Editor) => {
         const object = editor.canvas.getActiveObject();
         if (!object) return;
@@ -16,4 +16,4 @@ export default function useScale() {
     };
 
     return { onScale };
-}
+};
