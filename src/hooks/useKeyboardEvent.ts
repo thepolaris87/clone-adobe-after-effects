@@ -25,7 +25,7 @@ export default function useKeyboardEvent() {
             if (code === 'Delete') onDelete(editor as Editor);
             else if ((metaKey || ctrlKey) && code === 'KeyC') onCopy(editor as Editor);
             else if ((metaKey || ctrlKey) && code === 'KeyV') onPaste(editor as Editor);
-            else if (arrows.includes(code)) onMove(code, editor as Editor);
+            else if ((metaKey || ctrlKey) && arrows.includes(code)) onMove(code, editor as Editor);
             else if (scales.includes(code)) onScale(code, editor as Editor);
             else if ((metaKey || ctrlKey) && code === 'KeyS') {
                 e.preventDefault();
