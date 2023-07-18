@@ -97,7 +97,6 @@ export const AnimationList = ({ object, sounds, onSetTime, onSetNum, totalCancel
             timesRef.current = arr;
         });
     }, [object, editor]);
-
     const onStop = () => {
         setIsPlaying(false);
         timesRef.current.forEach((time) => {
@@ -115,7 +114,6 @@ export const AnimationList = ({ object, sounds, onSetTime, onSetNum, totalCancel
         setValue(0);
         object.set('opacity', 1);
     };
-
     const onSetPlay = (flag: boolean) => {
         setIsPlay(flag);
     };
@@ -126,7 +124,7 @@ export const AnimationList = ({ object, sounds, onSetTime, onSetNum, totalCancel
         timeLineRef.current = { time: 0, index: 0 };
         object.data.effects.map((effect: EffectProps, idx: number) => {
             const { timeLine } = effect;
-            if (timeLine[1] > timeLineRef.current.time) timeLineRef.current = { time: timeLine[1] - 1, index: idx };
+            if (timeLine[1] > timeLineRef.current.time) timeLineRef.current = { time: timeLine[1], index: idx };
         });
         onCreateTimeLine();
     };
@@ -138,21 +136,21 @@ export const AnimationList = ({ object, sounds, onSetTime, onSetNum, totalCancel
     }, [inputRef]);
 
     useEffect(() => {
-        if (!isPlaying || timeLineRef.current.time === 0) return;
-        if (time <= timeLineRef.current.time + 1) setValue(time);
-        if (time === timeLineRef.current.time + 1) {
+        // console.log(time);
+        if (timeLineRef.current.time === 0) return;
+        if (time >= timeLineRef.current.time + 1) {
             setValue(0);
             stop();
             setIsPlaying(false);
             onSetTime(isPlaying);
-        }
+        } else if (time <= timeLineRef.current.time + 1) setValue(time);
         opacityCancel.forEach((cancel: any) => {
             if (cancel[1] === time * 1000) {
                 cancel[0]?.();
                 object.set('opacity', 1);
             }
         });
-    }, [time, isPlaying, stop, opacityCancel, object, onSetTime]);
+    }, [time, stop, onSetTime, object, isPlaying, opacityCancel]);
 
     useEffect(() => {
         if (flag) onPlay();
