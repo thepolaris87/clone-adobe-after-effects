@@ -136,13 +136,12 @@ export const AnimationList = ({ object, sounds, onSetTime, onSetNum, totalCancel
     }, [inputRef]);
 
     useEffect(() => {
-        // console.log(time);
         if (timeLineRef.current.time === 0) return;
-        if (time >= timeLineRef.current.time + 1) {
+        if (time >= timeLineRef.current.time) {
             setValue(0);
             stop();
             setIsPlaying(false);
-            onSetTime(isPlaying);
+            onSetTime(true);
         } else if (time <= timeLineRef.current.time + 1) setValue(time);
         opacityCancel.forEach((cancel: any) => {
             if (cancel[1] === time * 1000) {
@@ -150,7 +149,7 @@ export const AnimationList = ({ object, sounds, onSetTime, onSetNum, totalCancel
                 object.set('opacity', 1);
             }
         });
-    }, [time, stop, onSetTime, object, isPlaying, opacityCancel]);
+    }, [time, onSetTime, object, opacityCancel, stop]);
 
     useEffect(() => {
         if (flag) onPlay();
@@ -162,7 +161,7 @@ export const AnimationList = ({ object, sounds, onSetTime, onSetNum, totalCancel
                 stop();
             });
         }
-    }, [flag, onPlay, object]);
+    }, [flag, onPlay, object, stop]);
 
     useEffect(() => {
         setEndTime();

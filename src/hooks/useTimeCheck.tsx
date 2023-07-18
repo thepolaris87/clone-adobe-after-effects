@@ -1,7 +1,7 @@
 import { useCallback, useState, useEffect, useRef } from 'react';
 
 export const useTimeCheck = () => {
-    const [time, setTime] = useState(1);
+    const [time, setTime] = useState(0);
     const interval = useRef<ReturnType<typeof setInterval>>();
 
     const start = useCallback(() => {
@@ -13,10 +13,10 @@ export const useTimeCheck = () => {
         }, 1000);
     }, []);
 
-    const stop = () => {
-        setTime(1);
+    const stop = useCallback(() => {
+        setTime(0);
         clearInterval(interval.current);
-    };
+    }, []);
 
     useEffect(() => {
         return () => {

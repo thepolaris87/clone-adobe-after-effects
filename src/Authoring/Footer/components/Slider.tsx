@@ -16,16 +16,16 @@ export const Slider = ({ timeMinValue, timeMaxValue, setTimeMaxValue, setTimeMin
         const num = e.screenX >= 1300 ? 10 : 5;
         if (position >= e.clientX + num) {
             if (timeMinValue === 0) return;
-            onCheckRange();
             setPosition(e.clientX);
             setTimeMaxValue(timeMaxValue - 1);
             setTimeMinValue(timeMinValue - 1);
+            onCheckRange();
         } else if (position <= e.clientX - num) {
             if (timeMaxValue === 100) return;
-            onCheckRange();
             setPosition(e.clientX);
             setTimeMaxValue(timeMaxValue + 1);
             setTimeMinValue(timeMinValue + 1);
+            onCheckRange();
         }
     };
 
